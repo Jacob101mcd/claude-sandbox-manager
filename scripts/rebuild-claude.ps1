@@ -18,6 +18,7 @@ $port = Register-Instance $name
 Ensure-SshKeys $name
 Ensure-Workspace $name
 Write-DockerCompose $name $port
+Stage-SshKeys $name
 
 cd $Script:Root
 docker compose down

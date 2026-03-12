@@ -136,15 +136,13 @@ function Write-DockerCompose($Name, $Port) {
     $templatePath = "$Script:Root\docker-compose.template.yml"
     $outputPath = "$Script:Root\docker-compose.yml"
     $workspaceDir = Get-WorkspaceDir $Name
-    $sshDir = Get-SshDir $Name
     $containerName = Get-ContainerName $Name
 
     $template = Get-Content $templatePath -Raw
     $composed = $template `
         -replace '\$\{INSTANCE_NAME\}', $containerName `
         -replace '\$\{HOST_PORT\}', $Port `
-        -replace '\$\{WORKSPACE_DIR\}', ($workspaceDir -replace '\\', '/') `
-        -replace '\$\{SSH_DIR\}', ($sshDir -replace '\\', '/')
+        -replace '\$\{WORKSPACE_DIR\}', ($workspaceDir -replace '\\', '/')
     $composed | Set-Content $outputPath -Encoding UTF8
 }
 
@@ -168,6 +166,14 @@ function Ensure-SshKeys($Name) {
 function Ensure-Workspace($Name) {
     $wsDir = Get-WorkspaceDir $Name
     if (-not (Test-Path $wsDir)) { New-Item -ItemType Directory -Path $wsDir | Out-Null }
+}
+
+function Stage-SshKeys($Name) {
+    $src = Get-SshDir $Name
+    $dst = "$Script:Root\_build_ssh"
+    if (Test-Path $dst) { Remove-Item -Recurse -Force $dst }
+    New-Item -ItemType Directory -Path $dst | Out-Null
+    Copy-Item "$src\*" $dst
 }
 
 function Write-SshConfig($Name, $Port) {
@@ -212,6 +218,7 @@ function Start-SandboxInstance($Name) {
     Ensure-SshKeys $Name
     Ensure-Workspace $Name
     Write-DockerCompose $Name $port
+    Stage-SshKeys $Name
 
     cd $Script:Root
     docker compose up -d --build

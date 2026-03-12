@@ -24,17 +24,14 @@ RUN useradd -m -s /bin/bash claude \
 RUN mkdir /var/run/sshd \
     && printf '\nPermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nPubkeyAuthentication yes\nAuthorizedKeysFile .ssh/authorized_keys\nHostKey /etc/ssh/ssh_host_ed25519_key\n' >> /etc/ssh/sshd_config
 
-# SSH_DIR points to the instance-specific ssh key directory (e.g. ssh/default)
-ARG SSH_DIR=ssh/default
-
 # Stable SSH host key — baked in so the fingerprint never changes across rebuilds
-COPY ${SSH_DIR}/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
-COPY ${SSH_DIR}/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed25519_key.pub
+COPY _build_ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
+COPY _build_ssh/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed25519_key.pub
 RUN chmod 600 /etc/ssh/ssh_host_ed25519_key \
     && chmod 644 /etc/ssh/ssh_host_ed25519_key.pub
 
 # Bake YOUR public key into the image (this survives every rebuild)
-COPY ${SSH_DIR}/id_claude.pub /tmp/id_claude.pub
+COPY _build_ssh/id_claude.pub /tmp/id_claude.pub
 
 RUN mkdir -p /home/claude/.ssh \
     && cat /tmp/id_claude.pub >> /home/claude/.ssh/authorized_keys \

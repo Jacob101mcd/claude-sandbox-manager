@@ -2,8 +2,6 @@ services:
   sandbox:
     build:
       context: .
-      args:
-        SSH_DIR: ${SSH_DIR}
     container_name: ${INSTANCE_NAME}
     restart: unless-stopped
     ports:

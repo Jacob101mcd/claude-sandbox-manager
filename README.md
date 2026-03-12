@@ -16,7 +16,6 @@ Supports **multiple instances** running simultaneously on the same machine — e
 1. **Clone this repo** anywhere on your machine:
    ```
    git clone https://github.com/Jacob101mcd/claude-sandbox.git
-   cd claude-sandbox
    ```
 
 2. **Build your first instance** — double-click `rebuild-docker.bat`
