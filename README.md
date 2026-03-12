@@ -8,13 +8,12 @@ A Docker-based isolated environment for running [Claude Code](https://docs.anthr
 |---|---|
 | **Docker Desktop** | [Download](https://www.docker.com/products/docker-desktop/) — requires Windows 10/11 with WSL2 or Hyper-V |
 | **Windows OpenSSH Client** | Built into Windows 10 (1803+) / 11. Verify: `Settings > Apps > Optional Features > OpenSSH Client` |
-| **Claude Desktop** | [Download](https://claude.ai/download) — connects to the sandbox over SSH |
 
 ## Quick Start
 
 1. **Clone this repo** anywhere on your machine:
    ```
-   git clone https://github.com/YOUR_USERNAME/claude-sandbox.git
+   git clone https://github.com/Jacob101mcd/claude-sandbox.git
    cd claude-sandbox
    ```
 
@@ -28,7 +27,11 @@ A Docker-based isolated environment for running [Claude Code](https://docs.anthr
    - Fixes Windows permissions on the SSH private key
    - Run this after reboots or Docker Desktop restarts
 
-4. **Configure Claude Desktop** to connect via SSH:
+4. **Connect and run Claude** — double-click `ssh-claude.bat`
+   - You should land at `claude@<container-id>:~/workspace$` with no password prompt
+   - Run Claude Code with: `claude --dangerously-skip-permissions`
+
+5. **(Optional) Connect via Claude Desktop** instead of SSH:
    - Open Claude Desktop > Settings > Developer > Edit Config
    - Add a remote SSH entry:
      - Host: `localhost`
@@ -36,9 +39,6 @@ A Docker-based isolated environment for running [Claude Code](https://docs.anthr
      - User: `claude`
      - Key: `<your-clone-path>\ssh\id_claude`
    - Or use the SSH alias `claude-sandbox` (written to `~/.ssh/config` by the start script)
-
-5. **Test the connection** — double-click `ssh-claude.bat`
-   - You should land at `claude@<container-id>:~/workspace$` with no password prompt
 
 ## Scripts
 

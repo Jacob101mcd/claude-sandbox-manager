@@ -9,6 +9,9 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
+# === Ensure workspace directory exists ===
+if (-not (Test-Path "$Root\workspace")) { New-Item -ItemType Directory -Path "$Root\workspace" | Out-Null }
+
 # === Auto-generate SSH keys if missing ===
 $SshDir = "$Root\ssh"
 if (-not (Test-Path $SshDir)) { New-Item -ItemType Directory -Path $SshDir | Out-Null }
