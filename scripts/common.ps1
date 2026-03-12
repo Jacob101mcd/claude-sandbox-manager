@@ -14,13 +14,45 @@ function Save-Instances($Instances) {
     $Instances | ConvertTo-Json -Depth 10 | Set-Content $Script:InstancesFile -Encoding UTF8
 }
 
+function Test-PortAvailable($Port) {
+    try {
+        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $Port)
+        $listener.Start()
+        $listener.Stop()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
 function Get-NextFreePort {
     $instances = Get-Instances
     $usedPorts = @()
     $instances.PSObject.Properties | ForEach-Object { $usedPorts += $_.Value.port }
     $port = 2222
-    while ($usedPorts -contains $port) { $port++ }
+    while (($usedPorts -contains $port) -or -not (Test-PortAvailable $port)) { $port++ }
     return $port
+}
+
+function Resolve-Port($Name, $Port) {
+    if (Test-PortAvailable $Port) { return $Port }
+
+    Write-Host "`n[!] Port $Port is already in use on this machine." -ForegroundColor Yellow
+    $nextFree = Get-NextFreePort
+    Write-Host "    Next available port: $nextFree" -ForegroundColor Cyan
+    $choice = Read-Host "    Enter port to use (or press Enter for $nextFree)"
+    if ([string]::IsNullOrWhiteSpace($choice)) {
+        $newPort = $nextFree
+    } else {
+        $newPort = [int]$choice
+    }
+
+    $instances = Get-Instances
+    $instances.PSObject.Properties[$Name].Value.port = $newPort
+    Save-Instances $instances
+
+    Write-Host "[OK] Instance '$Name' reassigned to port $newPort" -ForegroundColor Green
+    return $newPort
 }
 
 function Get-ContainerName($Name) {
@@ -215,6 +247,7 @@ Host $alias
 
 function Start-SandboxInstance($Name) {
     $port = Register-Instance $Name
+    $port = Resolve-Port $Name $port
     Ensure-SshKeys $Name
     Ensure-Workspace $Name
     Write-DockerCompose $Name $port

@@ -15,6 +15,7 @@ $name = Select-Instance "Select instance to rebuild:"
 if (-not $name) { pause; exit 1 }
 
 $port = Register-Instance $name
+$port = Resolve-Port $name $port
 Ensure-SshKeys $name
 Ensure-Workspace $name
 Write-DockerCompose $name $port
