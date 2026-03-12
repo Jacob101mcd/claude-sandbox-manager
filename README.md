@@ -24,7 +24,7 @@ Supports **multiple instances** running simultaneously on the same machine — e
    - Builds Ubuntu 24.04 image with Claude Code CLI + GSD
    - Takes a few minutes on first run
 
-3. **Start the instance** — double-click `start-claude.bat`
+3. **Start the instance** — double-click `claude-manager.bat` and choose `[S] Start`
    - Starts the container and writes SSH config to `~/.ssh/config`
    - Fixes Windows permissions on the SSH private key
 
@@ -88,7 +88,6 @@ Each instance `{name}` gets isolated resources:
 | Script | Purpose |
 |---|---|
 | `claude-manager.bat` | Interactive manager: create, start, stop, remove instances |
-| `start-claude.bat` | Start an instance + configure SSH client |
 | `rebuild-docker.bat` | Tear down and rebuild an instance from Dockerfile |
 | `backup-claude.bat` | Snapshot instance container state + workspace to `backups/` |
 | `restore-claude.bat` | Restore an instance from a previous backup |
@@ -109,7 +108,6 @@ claude-sandbox/
   scripts/
     common.ps1                Shared instance management functions
     claude-manager.ps1        Manager logic
-    start-claude.ps1          Start logic + SSH key generation + client setup
     rebuild-claude.ps1        Full rebuild logic
     backup-claude.ps1         Backup logic
     restore-claude.ps1        Restore logic
@@ -135,7 +133,7 @@ claude-sandbox/
 - **Ubuntu 24.04** base image
 - **Node.js LTS** + npm
 - **Claude Code CLI** (`@anthropic-ai/claude-code`)
-- **GSD framework** (`get-shit-done-cc`) — pre-installed globally for the `claude` user
+- **[GSD framework](https://github.com/glittercowboy/get-shit-done)** (`get-shit-done-cc`) — pre-installed globally for the `claude` user
 - **SSH server** with key-only authentication
 
 ## Notes
@@ -144,4 +142,4 @@ claude-sandbox/
 - **Scripts use relative paths** — you can clone this repo anywhere.
 - **Workspace migration:** If upgrading from a single-instance setup, the old `workspace/` folder is automatically migrated to `workspaces/default/` on first run.
 - Instance port assignments are persisted in `.instances.json` so they survive restarts.
-- If Docker Desktop restarts, run `start-claude.bat` or use the manager to bring instances back up.
+- If Docker Desktop restarts, use `claude-manager.bat` to bring instances back up.

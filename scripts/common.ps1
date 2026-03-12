@@ -225,6 +225,18 @@ function Start-SandboxInstance($Name) {
     docker ps --filter "name=$(Get-ContainerName $Name)"
 
     Write-SshConfig $Name $port
+
+    # Clear stale Claude Desktop host trust so it re-prompts for the new key
+    $ClaudeSshConfigs = "$env:APPDATA\Claude\ssh_configs.json"
+    if (Test-Path $ClaudeSshConfigs) {
+        $cfg = Get-Content $ClaudeSshConfigs -Raw | ConvertFrom-Json
+        if ($cfg.trustedHosts -contains "claude@localhost") {
+            $cfg.trustedHosts = @($cfg.trustedHosts | Where-Object { $_ -ne "claude@localhost" })
+            $cfg | ConvertTo-Json -Depth 10 | Set-Content $ClaudeSshConfigs -Encoding UTF8
+            Write-Host "NOTE: Cleared stale Claude Desktop host trust - you will be prompted to accept the host key once in Claude Desktop." -ForegroundColor Yellow
+        }
+    }
+
     return $true
 }
 
