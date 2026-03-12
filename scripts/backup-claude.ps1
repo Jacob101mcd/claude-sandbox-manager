@@ -45,7 +45,7 @@ Get-ChildItem -Path $WorkspaceRoot -Recurse -File |
 $zip.Dispose()
 
 # Save metadata
-@{ imagetag = $ImageTag; instance = $name; port = (Get-InstanceConfig $name) } |
+@{ imagetag = $ImageTag; instance = $name; port = $instances.PSObject.Properties[$name].Value.port } |
     ConvertTo-Json | Set-Content "$BackupDir\metadata.json" -Encoding UTF8
 $ImageTag | Out-File "$BackupDir\tag.txt" -Encoding utf8
 

@@ -91,7 +91,11 @@ while ($true) {
                 $sshDir = Get-SshDir $name
                 if (Test-Path $wsDir) { Remove-Item $wsDir -Recurse -Force }
                 if (Test-Path $bkDir) { Remove-Item $bkDir -Recurse -Force }
-                if (Test-Path $sshDir) { Remove-Item $sshDir -Recurse -Force }
+                if (Test-Path $sshDir) {
+                    # Reset restrictive ACLs set by icacls during key setup
+                    Get-ChildItem $sshDir -Recurse -File | ForEach-Object { icacls $_.FullName /reset 2>$null | Out-Null }
+                    Remove-Item $sshDir -Recurse -Force
+                }
                 Write-Host "Deleted files for '$name'." -ForegroundColor Green
             }
 

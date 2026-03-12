@@ -219,7 +219,7 @@ Host $alias
   HostName localhost
   Port $Port
   User claude
-  IdentityFile $keyPath
+  IdentityFile `"$keyPath`"
   IdentitiesOnly yes
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
