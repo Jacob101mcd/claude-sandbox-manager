@@ -1,0 +1,10 @@
+services:
+  claude-sandbox:
+    build: .
+    container_name: claude-sandbox
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    volumes:
+      - ./workspace:/home/claude/workspace
+    working_dir: /home/claude/workspace
