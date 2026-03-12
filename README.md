@@ -98,22 +98,25 @@ All scripts show an interactive selection menu when multiple instances exist.
 
 ```
 claude-sandbox/
-  Dockerfile                  Ubuntu 24.04 + SSH + Claude Code + GSD
-  docker-compose.template.yml Container config template (ports, volumes)
-  docker-compose.yml          (generated, gitignored) Active compose config
-  .instances.json             (generated, gitignored) Instance registry
-  CLAUDE.md                   Project guidance for Claude Code
-  claude-manager.bat          Main entry point for managing instances
+  claude-manager.bat            Main entry point for managing instances
+  rebuild-docker.bat            Tear down and rebuild an instance
+  backup-claude.bat             Snapshot instance state + workspace
+  restore-claude.bat            Restore from a previous backup
+  ssh-claude.bat                Open an SSH shell to an instance
+  docker-compose.yml            (generated, gitignored) Active compose config
+  .instances.json               (generated, gitignored) Instance registry
   scripts/
-    common.ps1                Shared instance management functions
-    claude-manager.ps1        Manager logic
-    rebuild-claude.ps1        Full rebuild logic
-    backup-claude.ps1         Backup logic
-    restore-claude.ps1        Restore logic
-    ssh-claude.ps1            SSH connection with instance selection
-  ssh/{name}/                 (auto-generated, gitignored) Per-instance SSH keys
-  workspaces/{name}/          (gitignored) Per-instance project files
-  backups/{name}/             (gitignored) Per-instance backup archives
+    Dockerfile                  Ubuntu 24.04 + SSH + Claude Code + GSD
+    docker-compose.template.yml Container config template (ports, volumes)
+    common.ps1                  Shared instance management functions
+    claude-manager.ps1          Manager logic
+    rebuild-claude.ps1          Full rebuild logic
+    backup-claude.ps1           Backup logic
+    restore-claude.ps1          Restore logic
+    ssh-claude.ps1              SSH connection with instance selection
+  ssh/{name}/                   (auto-generated, gitignored) Per-instance SSH keys
+  workspaces/{name}/            (gitignored) Per-instance project files
+  backups/{name}/               (gitignored) Per-instance backup archives
 ```
 
 ## SSH Details
