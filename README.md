@@ -18,20 +18,17 @@ Supports **multiple instances** running simultaneously on the same machine — e
    git clone https://github.com/Jacob101mcd/claude-sandbox.git
    ```
 
-2. **Build your first instance** — double-click `rebuild-docker.bat`
-   - Generates SSH keys automatically on first run
-   - Builds Ubuntu 24.04 image with Claude Code CLI + GSD
-   - Takes a few minutes on first run
+2. **Launch the manager** — double-click `claude-manager.bat`
+   - Auto-creates a `default` instance on first run
+   - Choose `[S] Start` to build and start the container
+   - Generates SSH keys, builds the Ubuntu 24.04 image, and writes SSH config
+   - Takes a few minutes on first build
 
-3. **Start the instance** — double-click `claude-manager.bat` and choose `[S] Start`
-   - Starts the container and writes SSH config to `~/.ssh/config`
-   - Fixes Windows permissions on the SSH private key
-
-4. **Connect and run Claude** — double-click `ssh-claude.bat`
+3. **Connect and run Claude** — double-click `ssh-claude.bat`
    - You should land at `claude@<container-id>:~/workspace$` with no password prompt
    - Run Claude Code with: `claude --dangerously-skip-permissions`
 
-5. **(Optional) Connect via Claude Desktop** instead of SSH:
+4. **(Optional) Connect via Claude Desktop** instead of SSH:
    - Open Claude Desktop > Settings > Developer > Edit Config
    - Add a remote SSH entry using the host alias shown in the scripts
    - Default instance uses alias `claude-sandbox` on port `2222`
