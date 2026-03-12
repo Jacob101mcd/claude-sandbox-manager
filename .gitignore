@@ -4,6 +4,5 @@ backups/
 ssh/
 _build_ssh/
 .claude/
-docker-compose.yml
 .instances.json
 CLAUDE.md

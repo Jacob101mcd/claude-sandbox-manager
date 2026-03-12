@@ -100,11 +100,9 @@ claude-sandbox/
   backup-claude.bat             Snapshot instance state + workspace
   restore-claude.bat            Restore from a previous backup
   ssh-claude.bat                Open an SSH shell to an instance
-  docker-compose.yml            (generated, gitignored) Active compose config
   .instances.json               (generated, gitignored) Instance registry
   scripts/
     Dockerfile                  Ubuntu 24.04 + SSH + Claude Code + GSD
-    docker-compose.template.yml Container config template (ports, volumes)
     common.ps1                  Shared instance management functions
     claude-manager.ps1          Manager logic
     rebuild-claude.ps1          Full rebuild logic

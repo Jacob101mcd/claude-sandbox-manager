@@ -164,19 +164,6 @@ function Unregister-Instance($Name) {
     Save-Instances $newInstances
 }
 
-function Write-DockerCompose($Name, $Port) {
-    $templatePath = "$PSScriptRoot\docker-compose.template.yml"
-    $outputPath = "$Script:Root\docker-compose.yml"
-    $workspaceDir = Get-WorkspaceDir $Name
-    $containerName = Get-ContainerName $Name
-
-    $template = Get-Content $templatePath -Raw
-    $composed = $template `
-        -replace '\$\{INSTANCE_NAME\}', $containerName `
-        -replace '\$\{HOST_PORT\}', $Port `
-        -replace '\$\{WORKSPACE_DIR\}', ($workspaceDir -replace '\\', '/')
-    $composed | Set-Content $outputPath -Encoding UTF8
-}
 
 function Ensure-SshKeys($Name) {
     $sshDir = Get-SshDir $Name
@@ -250,19 +237,39 @@ function Start-SandboxInstance($Name) {
     $port = Resolve-Port $Name $port
     Ensure-SshKeys $Name
     Ensure-Workspace $Name
-    Write-DockerCompose $Name $port
     Stage-SshKeys $Name
 
-    cd $Script:Root
-    docker compose up -d --build
+    $containerName = Get-ContainerName $Name
+    $imageName = "claude-sandbox-$Name"
+    $wsDir = (Get-WorkspaceDir $Name) -replace '\\', '/'
+
+    # Build image for this instance
+    docker build -t $imageName -f "$Script:Root\scripts\Dockerfile" "$Script:Root"
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "`n[X] docker compose up failed." -ForegroundColor Red
+        Write-Host "`n[X] Docker build failed." -ForegroundColor Red
+        return $false
+    }
+
+    # Stop and remove existing container if present
+    docker stop $containerName 2>$null
+    docker rm $containerName 2>$null
+
+    # Run new container
+    docker run -d --name $containerName `
+        -p "${port}:22" `
+        -v "${wsDir}:/home/claude/workspace" `
+        -w /home/claude/workspace `
+        --restart unless-stopped `
+        $imageName
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "`n[X] Docker run failed." -ForegroundColor Red
         return $false
     }
 
     Write-Host "`n[OK] Instance '$Name' is running! (port $port)" -ForegroundColor Green
-    docker ps --filter "name=$(Get-ContainerName $Name)"
+    docker ps --filter "name=$containerName"
 
     Write-SshConfig $Name $port
 
