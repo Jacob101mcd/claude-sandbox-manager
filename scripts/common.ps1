@@ -165,7 +165,7 @@ function Unregister-Instance($Name) {
 }
 
 function Write-DockerCompose($Name, $Port) {
-    $templatePath = "$Script:Root\docker-compose.template.yml"
+    $templatePath = "$PSScriptRoot\docker-compose.template.yml"
     $outputPath = "$Script:Root\docker-compose.yml"
     $workspaceDir = Get-WorkspaceDir $Name
     $containerName = Get-ContainerName $Name

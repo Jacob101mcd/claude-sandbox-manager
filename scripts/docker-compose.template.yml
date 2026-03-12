@@ -2,6 +2,7 @@ services:
   sandbox:
     build:
       context: .
+      dockerfile: scripts/Dockerfile
     container_name: ${INSTANCE_NAME}
     restart: unless-stopped
     ports:
