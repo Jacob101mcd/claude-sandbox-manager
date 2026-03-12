@@ -216,13 +216,33 @@ Host $alias
         New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" | Out-Null
     }
 
-    # Remove existing block for this alias if present, then re-add
+    # Remove all existing blocks for this alias, then re-add
     if (Test-Path $sshConfigPath) {
-        $content = Get-Content $sshConfigPath -Raw -ErrorAction SilentlyContinue
-        if ($content -and $content.Contains("Host $alias`n")) {
-            # Remove old block (from "Host <alias>" to next "Host " or end)
-            $content = $content -replace "(?m)\r?\nHost $([regex]::Escape($alias))\r?\n(?:  [^\r\n]+\r?\n)*", ""
-            Set-Content -Path $sshConfigPath -Value $content.TrimEnd() -Encoding UTF8
+        $lines = Get-Content $sshConfigPath -ErrorAction SilentlyContinue
+        if ($lines) {
+            $filtered = @()
+            $skipping = $false
+            foreach ($line in $lines) {
+                if ($line -match "^Host\s+$([regex]::Escape($alias))\s*$") {
+                    $skipping = $true
+                    continue
+                }
+                if ($skipping -and $line -match "^Host\s+") {
+                    $skipping = $false
+                }
+                if ($skipping -and $line -match "^\s") {
+                    continue
+                }
+                if ($skipping) {
+                    $skipping = $false
+                }
+                $filtered += $line
+            }
+            # Remove trailing blank lines
+            while ($filtered.Count -gt 0 -and $filtered[-1].Trim() -eq "") {
+                $filtered = $filtered[0..($filtered.Count - 2)]
+            }
+            Set-Content -Path $sshConfigPath -Value ($filtered -join "`r`n") -Encoding UTF8 -NoNewline
         }
     }
 
