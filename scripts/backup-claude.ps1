@@ -1,21 +1,27 @@
-$Root = Split-Path -Parent $PSScriptRoot
-$Timestamp = Get-Date -Format "yyyyMMdd-HHmm"
-$BackupDir = "$Root\backups\$Timestamp"
+. "$PSScriptRoot\common.ps1"
 
-# Check Docker is running
-docker info 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[X] Docker Desktop is not running. Please start it and try again." -ForegroundColor Red
-    exit 1
+Write-Host "=== Claude Sandbox Backup ===" -ForegroundColor Green
+
+if (-not (Test-DockerRunning)) { pause; exit 1 }
+
+$instances = Get-Instances
+if (@($instances.PSObject.Properties).Count -eq 0) {
+    Write-Host "No instances found." -ForegroundColor Red
+    pause; exit 1
 }
 
+$name = Select-Instance "Select instance to back up:"
+if (-not $name) { pause; exit 1 }
+
+$Timestamp = Get-Date -Format "yyyyMMdd-HHmm"
+$BackupDir = "$(Get-BackupDir $name)\$Timestamp"
 New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null
 
-Write-Host "=== Claude Sandbox Backup: $Timestamp ===" -ForegroundColor Green
+$containerName = Get-ContainerName $name
 
 # Commit container state
-$ImageTag = "claude-sandbox-backup-$Timestamp"
-docker commit claude-sandbox $ImageTag
+$ImageTag = "$containerName-backup-$Timestamp"
+docker commit $containerName $ImageTag
 
 # Save + compress Docker image
 docker save $ImageTag -o "$BackupDir\image.tar"
@@ -24,7 +30,7 @@ Remove-Item "$BackupDir\image.tar" -Force
 
 # Backup workspace
 Add-Type -Assembly System.IO.Compression.FileSystem
-$WorkspaceRoot = "$Root\workspace"
+$WorkspaceRoot = Get-WorkspaceDir $name
 $ZipPath = "$BackupDir\workspace.zip"
 if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
 $zip = [System.IO.Compression.ZipFile]::Open($ZipPath, 'Create')
@@ -38,7 +44,9 @@ Get-ChildItem -Path $WorkspaceRoot -Recurse -File |
     }
 $zip.Dispose()
 
-# Save clean tag
+# Save metadata
+@{ imagetag = $ImageTag; instance = $name; port = (Get-InstanceConfig $name) } |
+    ConvertTo-Json | Set-Content "$BackupDir\metadata.json" -Encoding UTF8
 $ImageTag | Out-File "$BackupDir\tag.txt" -Encoding utf8
 
 Write-Host "[OK] Backup complete! Saved to: $BackupDir" -ForegroundColor Green

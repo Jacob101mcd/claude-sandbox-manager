@@ -1,7 +1,7 @@
 @echo off
 echo =============================================
-echo Connecting to Claude Sandbox via SSH...
+echo Claude Sandbox Manager
 echo =============================================
 cd /d "%~dp0"
-powershell -ExecutionPolicy Bypass -File ".\scripts\ssh-claude.ps1"
+powershell -ExecutionPolicy Bypass -File ".\scripts\claude-manager.ps1"
 pause

@@ -1,4 +1,7 @@
 workspace/
+workspaces/
 backups/
 ssh/
 .claude/
+docker-compose.yml
+.instances.json

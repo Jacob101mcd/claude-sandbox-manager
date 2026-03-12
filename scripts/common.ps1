@@ -1,0 +1,251 @@
+# Common functions for multi-instance Claude Sandbox management
+
+$Script:Root = Split-Path -Parent $PSScriptRoot
+$Script:InstancesFile = "$Script:Root\.instances.json"
+
+function Get-Instances {
+    if (Test-Path $Script:InstancesFile) {
+        return (Get-Content $Script:InstancesFile -Raw | ConvertFrom-Json)
+    }
+    return [PSCustomObject]@{}
+}
+
+function Save-Instances($Instances) {
+    $Instances | ConvertTo-Json -Depth 10 | Set-Content $Script:InstancesFile -Encoding UTF8
+}
+
+function Get-NextFreePort {
+    $instances = Get-Instances
+    $usedPorts = @()
+    $instances.PSObject.Properties | ForEach-Object { $usedPorts += $_.Value.port }
+    $port = 2222
+    while ($usedPorts -contains $port) { $port++ }
+    return $port
+}
+
+function Get-ContainerName($Name) {
+    return "claude-sandbox-$Name"
+}
+
+function Get-SshAlias($Name) {
+    if ($Name -eq "default") { return "claude-sandbox" }
+    return "claude-$Name"
+}
+
+function Get-SshDir($Name) {
+    return "$Script:Root\ssh\$Name"
+}
+
+function Get-WorkspaceDir($Name) {
+    return "$Script:Root\workspaces\$Name"
+}
+
+function Get-BackupDir($Name) {
+    return "$Script:Root\backups\$Name"
+}
+
+function Get-ContainerStatus($Name) {
+    $containerName = Get-ContainerName $Name
+    $status = docker inspect --format '{{.State.Status}}' $containerName 2>$null
+    if ($LASTEXITCODE -ne 0) { return "not created" }
+    return $status
+}
+
+function Show-InstanceList {
+    $instances = Get-Instances
+    $props = @($instances.PSObject.Properties)
+    if ($props.Count -eq 0) {
+        Write-Host "  (no instances registered)" -ForegroundColor Gray
+        return
+    }
+    foreach ($prop in $props) {
+        $name = $prop.Name
+        $port = $prop.Value.port
+        $status = Get-ContainerStatus $name
+        $color = switch ($status) {
+            "running" { "Green" }
+            "exited"  { "Yellow" }
+            default   { "Gray" }
+        }
+        $alias = Get-SshAlias $name
+        Write-Host "  [$name]" -ForegroundColor Cyan -NoNewline
+        Write-Host "  port $port  " -NoNewline
+        Write-Host $status -ForegroundColor $color -NoNewline
+        Write-Host "  (ssh $alias)"
+    }
+}
+
+function Select-Instance($Prompt) {
+    $instances = Get-Instances
+    $props = @($instances.PSObject.Properties)
+    if ($props.Count -eq 0) {
+        Write-Host "No instances found." -ForegroundColor Red
+        return $null
+    }
+    if ($props.Count -eq 1) {
+        $name = $props[0].Name
+        Write-Host "Using instance: $name" -ForegroundColor Cyan
+        return $name
+    }
+    Write-Host "`n$Prompt" -ForegroundColor Cyan
+    for ($i = 0; $i -lt $props.Count; $i++) {
+        $name = $props[$i].Name
+        $port = $props[$i].Value.port
+        $status = Get-ContainerStatus $name
+        $color = switch ($status) {
+            "running" { "Green" }
+            "exited"  { "Yellow" }
+            default   { "Gray" }
+        }
+        Write-Host "  [$($i+1)] $name  (port $port, " -NoNewline
+        Write-Host $status -ForegroundColor $color -NoNewline
+        Write-Host ")"
+    }
+    $choice = Read-Host "`nEnter number"
+    $index = [int]$choice - 1
+    if ($index -lt 0 -or $index -ge $props.Count) {
+        Write-Host "Invalid choice." -ForegroundColor Red
+        return $null
+    }
+    return $props[$index].Name
+}
+
+function Register-Instance($Name) {
+    $instances = Get-Instances
+    if ($instances.PSObject.Properties[$Name]) {
+        return $instances.PSObject.Properties[$Name].Value.port
+    }
+    $port = Get-NextFreePort
+    $instances | Add-Member -NotePropertyName $Name -NotePropertyValue ([PSCustomObject]@{ port = $port })
+    Save-Instances $instances
+    Write-Host "Registered instance '$Name' on port $port" -ForegroundColor Green
+    return $port
+}
+
+function Unregister-Instance($Name) {
+    $instances = Get-Instances
+    if (-not $instances.PSObject.Properties[$Name]) { return }
+    $newInstances = [PSCustomObject]@{}
+    $instances.PSObject.Properties | Where-Object { $_.Name -ne $Name } | ForEach-Object {
+        $newInstances | Add-Member -NotePropertyName $_.Name -NotePropertyValue $_.Value
+    }
+    Save-Instances $newInstances
+}
+
+function Write-DockerCompose($Name, $Port) {
+    $templatePath = "$Script:Root\docker-compose.template.yml"
+    $outputPath = "$Script:Root\docker-compose.yml"
+    $workspaceDir = Get-WorkspaceDir $Name
+    $sshDir = Get-SshDir $Name
+    $containerName = Get-ContainerName $Name
+
+    $template = Get-Content $templatePath -Raw
+    $composed = $template `
+        -replace '\$\{INSTANCE_NAME\}', $containerName `
+        -replace '\$\{HOST_PORT\}', $Port `
+        -replace '\$\{WORKSPACE_DIR\}', ($workspaceDir -replace '\\', '/') `
+        -replace '\$\{SSH_DIR\}', ($sshDir -replace '\\', '/')
+    $composed | Set-Content $outputPath -Encoding UTF8
+}
+
+function Ensure-SshKeys($Name) {
+    $sshDir = Get-SshDir $Name
+    if (-not (Test-Path $sshDir)) { New-Item -ItemType Directory -Path $sshDir | Out-Null }
+
+    if (-not (Test-Path "$sshDir\id_claude")) {
+        Write-Host "Generating SSH user keypair for '$Name'..." -ForegroundColor Yellow
+        ssh-keygen -t ed25519 -f "$sshDir\id_claude" -N '""' -C "claude-sandbox-$Name"
+        Write-Host "[OK] SSH user keypair generated." -ForegroundColor Green
+    }
+
+    if (-not (Test-Path "$sshDir\ssh_host_ed25519_key")) {
+        Write-Host "Generating SSH host key for '$Name'..." -ForegroundColor Yellow
+        ssh-keygen -t ed25519 -f "$sshDir\ssh_host_ed25519_key" -N '""' -C "claude-sandbox-$Name-host"
+        Write-Host "[OK] SSH host key generated." -ForegroundColor Green
+    }
+}
+
+function Ensure-Workspace($Name) {
+    $wsDir = Get-WorkspaceDir $Name
+    if (-not (Test-Path $wsDir)) { New-Item -ItemType Directory -Path $wsDir | Out-Null }
+}
+
+function Write-SshConfig($Name, $Port) {
+    $sshConfigPath = "$env:USERPROFILE\.ssh\config"
+    $keyPath = "$(Get-SshDir $Name)\id_claude"
+    $alias = Get-SshAlias $Name
+
+    $hostBlock = @"
+
+Host $alias
+  HostName localhost
+  Port $Port
+  User claude
+  IdentityFile $keyPath
+  IdentitiesOnly yes
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+"@
+
+    if (-not (Test-Path "$env:USERPROFILE\.ssh")) {
+        New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" | Out-Null
+    }
+
+    # Remove existing block for this alias if present, then re-add
+    if (Test-Path $sshConfigPath) {
+        $content = Get-Content $sshConfigPath -Raw -ErrorAction SilentlyContinue
+        if ($content -and $content.Contains("Host $alias`n")) {
+            # Remove old block (from "Host <alias>" to next "Host " or end)
+            $content = $content -replace "(?m)\r?\nHost $([regex]::Escape($alias))\r?\n(?:  [^\r\n]+\r?\n)*", ""
+            Set-Content -Path $sshConfigPath -Value $content.TrimEnd() -Encoding UTF8
+        }
+    }
+
+    Add-Content -Path $sshConfigPath -Value $hostBlock
+    Write-Host "[OK] SSH config for '$alias' written to $sshConfigPath" -ForegroundColor Green
+
+    icacls $keyPath /inheritance:r /grant:r "${env:USERNAME}:(R)" 2>$null | Out-Null
+}
+
+function Start-SandboxInstance($Name) {
+    $port = Register-Instance $Name
+    Ensure-SshKeys $Name
+    Ensure-Workspace $Name
+    Write-DockerCompose $Name $port
+
+    cd $Script:Root
+    docker compose up -d --build
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "`n[X] docker compose up failed." -ForegroundColor Red
+        return $false
+    }
+
+    Write-Host "`n[OK] Instance '$Name' is running! (port $port)" -ForegroundColor Green
+    docker ps --filter "name=$(Get-ContainerName $Name)"
+
+    Write-SshConfig $Name $port
+    return $true
+}
+
+function Invoke-WorkspaceMigration {
+    $oldWorkspace = "$Script:Root\workspace"
+    $newWorkspace = Get-WorkspaceDir "default"
+    if ((Test-Path $oldWorkspace) -and -not (Test-Path $newWorkspace)) {
+        Write-Host "Migrating workspace/ to workspaces/default/..." -ForegroundColor Yellow
+        if (-not (Test-Path "$Script:Root\workspaces")) {
+            New-Item -ItemType Directory -Path "$Script:Root\workspaces" | Out-Null
+        }
+        Move-Item -Path $oldWorkspace -Destination $newWorkspace
+        Write-Host "[OK] Workspace migrated." -ForegroundColor Green
+    }
+}
+
+function Test-DockerRunning {
+    docker info 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "`n[X] Docker Desktop is not running. Please start it and try again." -ForegroundColor Red
+        return $false
+    }
+    return $true
+}
