@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-13T17:43:50Z"
-last_activity: 2026-03-13 — Completed 01-03 Docker and SSH Modules
+status: completed
+stopped_at: Completed 01-04-PLAN.md (Phase 1 complete)
+last_updated: "2026-03-13T17:52:54.186Z"
+last_activity: 2026-03-13 — Completed 01-04 Interactive Menu + Entry Point
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 1 of 6 (Foundation + Security)
-Plan: 3 of 4 in current phase
-Status: Executing
-Last activity: 2026-03-13 — Completed 01-03 Docker and SSH Modules
+Plan: 4 of 4 in current phase (PHASE COMPLETE)
+Status: Phase Complete
+Last activity: 2026-03-13 — Completed 01-04 Interactive Menu + Entry Point
 
-Progress: [████████░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 2.3min
-- Total execution time: 0.12 hours
+- Total plans completed: 4
+- Average duration: 2.5min
+- Total execution time: 0.17 hours
 
 **By Phase:**
 
@@ -46,9 +46,10 @@ Progress: [████████░░] 75%
 | Phase 01 P01 | 2min | 2 tasks | 6 files |
 | Phase 01 P02 | 3min | 2 tasks | 6 files |
 | Phase 01 P03 | 2min | 2 tasks | 4 files |
+| Phase 01 P04 | 3min | 2 tasks | 2 files |
 
 **Recent Trend:**
-- Last 5 plans: 2min, 3min, 2min
+- Last 5 plans: 2min, 3min, 2min, 3min
 - Trend: Steady
 
 *Updated after each plan completion*
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 01 P03]: Docker run command built as Bash array for safe argument handling
 - [Phase 01 P03]: SSH config blocks parsed line-by-line for clean removal/replacement
 - [Phase 01 P03]: Build staging dir cleaned and recreated each build for deterministic state
+- [Phase 01 P04]: Auto-create default instance when none exist, matching PowerShell behavior
+- [Phase 01 P04]: Menu actions are case-insensitive single-character dispatch (S/T/N/R/Q)
+- [Phase 01 P04]: bin/csm sources all modules then runs startup checks before menu_main
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T17:43:50Z
-Stopped at: Completed 01-03-PLAN.md
-Resume file: .planning/phases/01-foundation-security/01-03-SUMMARY.md
+Last session: 2026-03-13T17:52:52.838Z
+Stopped at: Completed 01-04-PLAN.md (Phase 1 complete)
+Resume file: None

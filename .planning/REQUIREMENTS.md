@@ -9,9 +9,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Cross-Platform
 
-- [ ] **PLAT-01**: Manager scripts run natively on Linux without modification
-- [ ] **PLAT-02**: Manager scripts run natively on macOS without modification
-- [ ] **PLAT-03**: Existing Windows support maintained alongside Linux/macOS
+- [x] **PLAT-01**: Manager scripts run natively on Linux without modification
+- [x] **PLAT-02**: Manager scripts run natively on macOS without modification
+- [x] **PLAT-03**: Existing Windows support maintained alongside Linux/macOS
 - [x] **PLAT-04**: Platform-specific differences (paths, commands) detected and handled automatically
 
 ### Container Variants
@@ -118,9 +118,9 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PLAT-01 | Phase 1 | Pending |
-| PLAT-02 | Phase 1 | Pending |
-| PLAT-03 | Phase 1 | Pending |
+| PLAT-01 | Phase 1 | Complete |
+| PLAT-02 | Phase 1 | Complete |
+| PLAT-03 | Phase 1 | Complete |
 | PLAT-04 | Phase 1 | Complete |
 | QUAL-01 | Phase 1 | Complete |
 | QUAL-02 | Phase 1 | Complete |

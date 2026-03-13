@@ -12,7 +12,7 @@ This roadmap transforms the existing Windows-only `.bat` script toolchain into a
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation + Security** - Cross-platform entry point, modular code structure, bug fixes, and immediate security hardening of the existing codebase
+- [x] **Phase 1: Foundation + Security** - Cross-platform entry point, modular code structure, bug fixes, and immediate security hardening of the existing codebase (completed 2026-03-13)
 - [ ] **Phase 2: Container Engine** - End-to-end container lifecycle (create/start/stop/ssh) on Linux and macOS with minimal CLI variant, credential injection, and Claude Code via native installer
 - [ ] **Phase 3: Backup + Data Safety** - Full container backup and restore that correctly captures both container filesystem and workspace volume data, with optional auto-backup on startup
 - [ ] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage
@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Platform-specific paths and commands (Linux vs macOS vs Windows) are detected and handled without user configuration
   4. The Dockerfile no longer contains a hardcoded password; SSH is bound to localhost only
   5. Orphaned/stale container instances appear in the instance list and can be detected by the manager
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 01-01-PLAN.md — Dockerfile security hardening + test infrastructure
@@ -103,7 +103,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Security | 0/4 | Planning complete | - |
+| 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
 | 2. Container Engine | 0/? | Not started | - |
 | 3. Backup + Data Safety | 0/? | Not started | - |
 | 4. GUI Container Variant | 0/? | Not started | - |
