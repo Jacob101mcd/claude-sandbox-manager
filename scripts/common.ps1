@@ -197,8 +197,22 @@ function Stage-SshKeys($Name) {
 
 function Write-SshConfig($Name, $Port) {
     $sshConfigPath = "$env:USERPROFILE\.ssh\config"
-    $keyPath = "$(Get-SshDir $Name)\id_claude"
+    $srcKeyPath = "$(Get-SshDir $Name)\id_claude"
     $alias = Get-SshAlias $Name
+
+    if (-not (Test-Path "$env:USERPROFILE\.ssh")) {
+        New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" | Out-Null
+    }
+
+    # Copy key to ~/.ssh/claude-<alias>/ so the path has no spaces
+    # (Windows OpenSSH cannot handle spaces in IdentityFile paths)
+    $safeKeyDir = "$env:USERPROFILE\.ssh\$alias"
+    if (-not (Test-Path $safeKeyDir)) {
+        New-Item -ItemType Directory -Path $safeKeyDir | Out-Null
+    }
+    Copy-Item -Force $srcKeyPath "$safeKeyDir\id_claude"
+    $safeKeyPath = "$safeKeyDir\id_claude"
+    icacls $safeKeyPath /inheritance:r /grant:r "${env:USERNAME}:(R)" 2>$null | Out-Null
 
     $hostBlock = @"
 
@@ -206,15 +220,11 @@ Host $alias
   HostName localhost
   Port $Port
   User claude
-  IdentityFile $keyPath
+  IdentityFile $safeKeyPath
   IdentitiesOnly yes
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
 "@
-
-    if (-not (Test-Path "$env:USERPROFILE\.ssh")) {
-        New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" | Out-Null
-    }
 
     # Remove all existing blocks for this alias, then re-add
     if (Test-Path $sshConfigPath) {
@@ -248,8 +258,6 @@ Host $alias
 
     Add-Content -Path $sshConfigPath -Value $hostBlock
     Write-Host "[OK] SSH config for '$alias' written to $sshConfigPath" -ForegroundColor Green
-
-    icacls $keyPath /inheritance:r /grant:r "${env:USERNAME}:(R)" 2>$null | Out-Null
 }
 
 function Start-SandboxInstance($Name) {

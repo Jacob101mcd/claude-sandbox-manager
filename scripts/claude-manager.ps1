@@ -84,6 +84,14 @@ while ($true) {
 
             Unregister-Instance $name
 
+            # Clean up copied SSH key from ~/.ssh/<alias>/
+            $safeKeyDir = "$env:USERPROFILE\.ssh\$alias"
+            if (Test-Path $safeKeyDir) {
+                Get-ChildItem $safeKeyDir -Recurse -File | ForEach-Object { icacls $_.FullName /reset 2>$null | Out-Null }
+                Remove-Item $safeKeyDir -Recurse -Force
+                Write-Host "Removed SSH key copy from $safeKeyDir" -ForegroundColor Green
+            }
+
             $deleteFiles = Read-Host "Also delete workspace and backups for '$name'? (y/N)"
             if ($deleteFiles -eq "y" -or $deleteFiles -eq "Y") {
                 $wsDir = Get-WorkspaceDir $name

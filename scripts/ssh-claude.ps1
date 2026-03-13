@@ -11,4 +11,7 @@ if (-not $name) { pause; exit 1 }
 
 $alias = Get-SshAlias $name
 Write-Host "Connecting to '$name' via ssh $alias..." -ForegroundColor Green
-ssh -t $alias "cd workspace && exec `$SHELL"
+# Use Windows OpenSSH directly (Git's ssh ignores %USERPROFILE%\.ssh\config)
+$sshExe = "$env:SystemRoot\System32\OpenSSH\ssh.exe"
+if (-not (Test-Path $sshExe)) { $sshExe = "ssh" }
+& $sshExe -t $alias "cd workspace && exec `$SHELL"

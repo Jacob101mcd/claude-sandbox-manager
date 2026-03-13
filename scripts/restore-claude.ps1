@@ -83,9 +83,11 @@ if (Test-Path $WorkspaceZip) {
 
 # Start container from backup
 Write-Host "Starting container from backup..."
+$wsDirDocker = $wsDir -replace '\\', '/'
 docker run -d --name $containerName `
   -p "${port}:22" `
-  -v "${wsDir}:/home/claude/workspace" `
+  -v "${wsDirDocker}:/home/claude/workspace" `
+  -w /home/claude/workspace `
   --restart unless-stopped `
   $ImageTag
 
