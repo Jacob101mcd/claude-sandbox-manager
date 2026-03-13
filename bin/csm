@@ -19,6 +19,7 @@ source "$CSM_ROOT/lib/platform.sh"
 source "$CSM_ROOT/lib/instances.sh"
 source "$CSM_ROOT/lib/ssh.sh"
 source "$CSM_ROOT/lib/docker.sh"
+source "$CSM_ROOT/lib/backup.sh"    # after docker.sh, before menu.sh
 source "$CSM_ROOT/lib/menu.sh"
 
 # Startup checks

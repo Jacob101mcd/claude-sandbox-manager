@@ -124,6 +124,17 @@ docker_start_instance() {
     # Ensure .env template exists on first use
     credentials_ensure_env_file
 
+    # Auto-backup: capture last-known-good state before starting
+    credentials_load || true
+    if [[ "${CSM_AUTO_BACKUP:-}" == "1" ]]; then
+        local status
+        status="$(docker_status "$name")"
+        if [[ "$status" == "running" || "$status" == "exited" ]]; then
+            msg_info "Auto-backup: creating backup..."
+            backup_create "$name"
+        fi
+    fi
+
     docker_check_running
 
     # 1. Ensure SSH keys exist
