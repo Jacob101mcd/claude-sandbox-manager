@@ -57,13 +57,13 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Code Quality
 
 - [ ] **QUAL-01**: Codebase restructured with clear separation of concerns (no monolithic scripts)
-- [ ] **QUAL-02**: Code follows Docker best practices (multi-stage builds, minimal layers, no root)
+- [x] **QUAL-02**: Code follows Docker best practices (multi-stage builds, minimal layers, no root)
 - [ ] **QUAL-03**: Code follows Claude Code best practices for sandbox environments
-- [ ] **QUAL-04**: Consistent coding style and naming conventions across all scripts
+- [x] **QUAL-04**: Consistent coding style and naming conventions across all scripts
 
 ### Security
 
-- [ ] **SEC-01**: Hardcoded passwords removed from Dockerfiles (use passwordless sudo)
+- [x] **SEC-01**: Hardcoded passwords removed from Dockerfiles (use passwordless sudo)
 - [ ] **SEC-02**: SSH bound to localhost only (not 0.0.0.0)
 - [ ] **SEC-03**: Docker capabilities dropped to minimum required set
 - [ ] **SEC-04**: Resource limits set on containers (memory, CPU)
@@ -123,10 +123,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | PLAT-03 | Phase 1 | Pending |
 | PLAT-04 | Phase 1 | Pending |
 | QUAL-01 | Phase 1 | Pending |
-| QUAL-02 | Phase 1 | Pending |
+| QUAL-02 | Phase 1 | Complete |
 | QUAL-03 | Phase 1 | Pending |
-| QUAL-04 | Phase 1 | Pending |
-| SEC-01 | Phase 1 | Pending |
+| QUAL-04 | Phase 1 | Complete |
+| SEC-01 | Phase 1 | Complete |
 | SEC-02 | Phase 1 | Pending |
 | SEC-03 | Phase 1 | Pending |
 | SEC-04 | Phase 1 | Pending |
