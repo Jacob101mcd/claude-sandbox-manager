@@ -206,7 +206,21 @@ menu_action_new() {
     # Register instance with type (docker_start_instance will find the port)
     instances_add "$name" "$container_type"
 
+    # Prompt for remote control (default off per locked decision)
+    local rc_answer
+    read -rp "Enable remote control (requires claude.ai account, not API key)? (y/N) " rc_answer
+    if [[ "$rc_answer" == "y" || "$rc_answer" == "Y" ]]; then
+        instances_set_remote_control "$name" true
+    fi
+
     docker_start_instance "$name"
+
+    # Show remote control info if enabled
+    local rc_enabled
+    rc_enabled="$(instances_get_remote_control "$name")"
+    if [[ "$rc_enabled" == "true" ]]; then
+        msg_info "Remote control enabled. After SSH, check /tmp/csm-remote-control.log for session URL."
+    fi
 
     if [[ "$container_type" == "gui" ]]; then
         local vnc_port

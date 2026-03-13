@@ -11,6 +11,18 @@
 [[ -n "${CSM_ROOT:-}" ]] || { echo "ERROR: CSM_ROOT not set. Run via bin/csm." >&2; exit 1; }
 
 # ---------------------------------------------------------------------------
+# _docker_detect_variant -- Detect whether running Docker Desktop or Engine
+# Returns: "desktop" or "engine" (stdout)
+# ---------------------------------------------------------------------------
+_docker_detect_variant() {
+    local ctx
+    ctx="$(docker context show 2>/dev/null || echo "default")"
+    if [[ "$ctx" == "desktop-linux" ]]; then echo "desktop"; return; fi
+    if docker context inspect desktop-linux &>/dev/null 2>&1; then echo "desktop"; return; fi
+    echo "engine"
+}
+
+# ---------------------------------------------------------------------------
 # docker_check_running -- Verify Docker daemon is accessible
 # ---------------------------------------------------------------------------
 docker_check_running() {
@@ -84,6 +96,15 @@ docker_run_instance() {
         vnc_port="$(instances_get_vnc_port "$name")"
         cmd+=(-p "127.0.0.1:${vnc_port}:6080")       # noVNC WebSocket port
         cmd+=(--shm-size=512m)                        # Shared memory for browser/GPU
+    fi
+
+    # MCP: ensure host.docker.internal resolves on Linux Engine
+    if [[ "$(uname -s)" == "Linux" ]]; then
+        local docker_variant
+        docker_variant="$(_docker_detect_variant)"
+        if [[ "$docker_variant" == "engine" ]]; then
+            cmd+=(--add-host=host.docker.internal:host-gateway)
+        fi
     fi
 
     # Inject credentials as -e flags (from .env via credentials module)

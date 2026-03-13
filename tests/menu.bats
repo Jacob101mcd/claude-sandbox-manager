@@ -49,3 +49,15 @@ teardown() {
     result="$(echo "2" | menu_select_container_type)"
     [[ "$result" != *"coming soon"* ]]
 }
+
+# ---------------------------------------------------------------------------
+# Remote control prompt -- phase 05 Task 2
+# ---------------------------------------------------------------------------
+
+@test "menu.sh contains remote control prompt" {
+    grep -q 'remote control' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu.sh contains instances_set_remote_control call" {
+    grep -q 'instances_set_remote_control' "$REAL_CSM_ROOT/lib/menu.sh"
+}

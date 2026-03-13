@@ -277,3 +277,55 @@ teardown() {
     local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
     [[ "$flags" != *"CSM_REMOTE_CONTROL"* ]]
 }
+
+# ---------------------------------------------------------------------------
+# Linux Engine detection and --add-host flag -- phase 05 Task 2
+# ---------------------------------------------------------------------------
+
+@test "docker.sh contains add-host flag logic" {
+    grep -q 'add-host=host.docker.internal' "$REAL_CSM_ROOT/lib/docker.sh"
+}
+
+@test "docker_run_instance adds --add-host on Linux Engine" {
+    # Mock uname to report Linux
+    uname() { echo "Linux"; }
+    export -f uname
+
+    # Mock _docker_detect_variant to return "engine"
+    _docker_detect_variant() { echo "engine"; }
+    export -f _docker_detect_variant
+
+    instances_add "testhost" "cli"
+    docker_run_instance "testhost" "2222"
+
+    local found=false
+    local arg
+    for arg in "${LAST_DOCKER_RUN_ARGS[@]}"; do
+        if [[ "$arg" == "--add-host=host.docker.internal:host-gateway" ]]; then
+            found=true
+        fi
+    done
+    $found
+}
+
+@test "docker_run_instance skips --add-host on Docker Desktop" {
+    # Mock uname to report Linux
+    uname() { echo "Linux"; }
+    export -f uname
+
+    # Mock _docker_detect_variant to return "desktop"
+    _docker_detect_variant() { echo "desktop"; }
+    export -f _docker_detect_variant
+
+    instances_add "testdesk" "cli"
+    docker_run_instance "testdesk" "2222"
+
+    local found=false
+    local arg
+    for arg in "${LAST_DOCKER_RUN_ARGS[@]}"; do
+        if [[ "$arg" == "--add-host=host.docker.internal:host-gateway" ]]; then
+            found=true
+        fi
+    done
+    ! $found
+}
