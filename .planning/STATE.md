@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-13T18:34:00.848Z"
-last_activity: 2026-03-13 — Completed 01-04 Interactive Menu + Entry Point
+status: in-progress
+stopped_at: Completed 02-01 Credentials + Dockerfile
+last_updated: "2026-03-13T18:49:14Z"
+last_activity: 2026-03-13 — Completed 02-01 Credentials + Dockerfile
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 6
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Safe, hands-free Claude Code sandboxes that anyone can spin up without Docker expertise
-**Current focus:** Phase 1 — Foundation + Security
+**Current focus:** Phase 2 — Container Engine
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation + Security)
-Plan: 4 of 4 in current phase (PHASE COMPLETE)
-Status: Phase Complete
-Last activity: 2026-03-13 — Completed 01-04 Interactive Menu + Entry Point
+Phase: 2 of 6 (Container Engine)
+Plan: 1 of 2 in current phase
+Status: In Progress
+Last activity: 2026-03-13 — Completed 02-01 Credentials + Dockerfile
 
-Progress: [██████████] 100%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 2.5min
-- Total execution time: 0.17 hours
+- Total plans completed: 5
+- Average duration: 2.4min
+- Total execution time: 0.20 hours
 
 **By Phase:**
 
@@ -47,9 +47,10 @@ Progress: [██████████] 100%
 | Phase 01 P02 | 3min | 2 tasks | 6 files |
 | Phase 01 P03 | 2min | 2 tasks | 4 files |
 | Phase 01 P04 | 3min | 2 tasks | 2 files |
+| Phase 02 P01 | 2min | 2 tasks | 4 files |
 
 **Recent Trend:**
-- Last 5 plans: 2min, 3min, 2min, 3min
+- Last 5 plans: 2min, 3min, 2min, 3min, 2min
 - Trend: Steady
 
 *Updated after each plan completion*
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 01 P04]: Auto-create default instance when none exist, matching PowerShell behavior
 - [Phase 01 P04]: Menu actions are case-insensitive single-character dispatch (S/T/N/R/Q)
 - [Phase 01 P04]: bin/csm sources all modules then runs startup checks before menu_main
+- [Phase 02 P01]: Native installer via curl pipe bash replaces NPM global install for Claude Code
+- [Phase 02 P01]: Credentials never in image layers -- runtime injection only via docker -e flags
+- [Phase 02 P01]: msg_warn for missing credentials -- non-blocking warnings, not fatal errors
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T18:34:00.837Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-container-engine/02-CONTEXT.md
+Last session: 2026-03-13T18:49:14Z
+Stopped at: Completed 02-01 Credentials + Dockerfile
+Resume file: .planning/phases/02-container-engine/02-01-SUMMARY.md

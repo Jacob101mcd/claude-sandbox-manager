@@ -49,7 +49,7 @@ Plans:
   3. Claude Code inside the container has access to ANTHROPIC_API_KEY without the user manually setting it
   4. GitHub CLI inside the container is authenticated with the user's token and can run `gh` commands
   5. Credentials are not present in the Docker image layers (verified by inspecting image history)
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 02-01-PLAN.md — Credential module + Dockerfile overhaul (native installer, gh CLI)
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
-| 2. Container Engine | 0/2 | Planning complete | - |
+| 2. Container Engine | 1/2 | In Progress|  |
 | 3. Backup + Data Safety | 0/? | Not started | - |
 | 4. GUI Container Variant | 0/? | Not started | - |
 | 5. Integration Layer | 0/? | Not started | - |

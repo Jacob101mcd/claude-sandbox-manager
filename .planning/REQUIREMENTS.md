@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Container Variants
 
-- [ ] **CONT-01**: User can build and run a minimal CLI container (lightweight, headless)
+- [x] **CONT-01**: User can build and run a minimal CLI container (lightweight, headless)
 - [ ] **CONT-02**: User can build and run a GUI container with desktop environment and browser
 - [ ] **CONT-03**: Instance manager presents container type selection when creating new instances
 - [ ] **CONT-04**: GUI container runs Xvfb + noVNC for browser-based desktop access
@@ -24,15 +24,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Claude Code Installation
 
-- [ ] **INST-01**: Claude Code installed via native installer (not NPM) during container build
+- [x] **INST-01**: Claude Code installed via native installer (not NPM) during container build
 - [ ] **INST-02**: Claude Code remote control optionally configured on container startup
 
 ### Credential Management
 
-- [ ] **CRED-01**: ANTHROPIC_API_KEY automatically injected into container environment
-- [ ] **CRED-02**: GitHub CLI pre-installed in containers
-- [ ] **CRED-03**: GitHub CLI auto-authenticated with user-provided token on container build
-- [ ] **CRED-04**: Credentials never baked into Docker images (runtime injection only)
+- [x] **CRED-01**: ANTHROPIC_API_KEY automatically injected into container environment
+- [x] **CRED-02**: GitHub CLI pre-installed in containers
+- [x] **CRED-03**: GitHub CLI auto-authenticated with user-provided token on container build
+- [x] **CRED-04**: Credentials never baked into Docker images (runtime injection only)
 
 ### Settings Management
 
@@ -132,13 +132,13 @@ Deferred to future release. Tracked but not in current roadmap.
 | SEC-04 | Phase 1 | Complete |
 | BUG-01 | Phase 1 | Complete |
 | BUG-02 | Phase 1 | Complete |
-| CONT-01 | Phase 2 | Pending |
+| CONT-01 | Phase 2 | Complete |
 | CONT-03 | Phase 2 | Pending |
-| INST-01 | Phase 2 | Pending |
-| CRED-01 | Phase 2 | Pending |
-| CRED-02 | Phase 2 | Pending |
-| CRED-03 | Phase 2 | Pending |
-| CRED-04 | Phase 2 | Pending |
+| INST-01 | Phase 2 | Complete |
+| CRED-01 | Phase 2 | Complete |
+| CRED-02 | Phase 2 | Complete |
+| CRED-03 | Phase 2 | Complete |
+| CRED-04 | Phase 2 | Complete |
 | BACK-01 | Phase 3 | Pending |
 | BACK-02 | Phase 3 | Pending |
 | BACK-03 | Phase 3 | Pending |
