@@ -33,14 +33,19 @@ teardown() {
     [[ "$last_line" == "cli" ]]
 }
 
-@test "menu_select_container_type returns cli when input is 2 (GUI not available)" {
+@test "menu_select_container_type returns gui for option 2" {
     result="$(echo "2" | menu_select_container_type)"
     last_line="$(echo "$result" | tail -1)"
-    [[ "$last_line" == "cli" ]]
+    [[ "$last_line" == "gui" ]]
 }
 
 @test "menu_select_container_type returns cli when input is invalid" {
     result="$(echo "9" | menu_select_container_type)"
     last_line="$(echo "$result" | tail -1)"
     [[ "$last_line" == "cli" ]]
+}
+
+@test "menu_select_container_type does not show coming soon" {
+    result="$(echo "2" | menu_select_container_type)"
+    [[ "$result" != *"coming soon"* ]]
 }
