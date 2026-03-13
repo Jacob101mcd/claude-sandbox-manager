@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# bin/csm -- Main entry point for Claude Sandbox Manager (Linux/macOS)
+#
+# Usage: ./bin/csm
+#
+# This script sets up the environment and launches the interactive menu.
+# It sources all library modules in dependency order and runs startup checks.
+
+set -euo pipefail
+
+# Resolve project root (parent of bin/)
+CSM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export CSM_ROOT
+
+# Source library modules in dependency order
+source "$CSM_ROOT/lib/common.sh"
+source "$CSM_ROOT/lib/platform.sh"
+source "$CSM_ROOT/lib/instances.sh"
+source "$CSM_ROOT/lib/ssh.sh"
+source "$CSM_ROOT/lib/docker.sh"
+source "$CSM_ROOT/lib/menu.sh"
+
+# Startup checks
+platform_detect
+platform_check_dependencies
+docker_check_running
+
+# Launch interactive menu
+menu_main
