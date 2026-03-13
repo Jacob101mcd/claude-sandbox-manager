@@ -1,0 +1,8 @@
+workspaces/
+backups/
+ssh/
+.git/
+.planning/
+tests/
+*.md
+.instances.json

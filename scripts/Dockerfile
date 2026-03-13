@@ -17,8 +17,9 @@ RUN npm install -g @anthropic-ai/claude-code
 
 # Create claude user with sudo (must exist before GSD install)
 RUN useradd -m -s /bin/bash claude \
-    && echo 'claude:claude123' | chpasswd \
-    && adduser claude sudo
+    && usermod -aG sudo claude \
+    && echo 'claude ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/claude \
+    && chmod 0440 /etc/sudoers.d/claude
 
 # SSH setup — key-only (no password ever)
 RUN mkdir /var/run/sshd \
