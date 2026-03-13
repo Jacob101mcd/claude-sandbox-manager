@@ -6,3 +6,6 @@ _build_ssh/
 .claude/
 .instances.json
 CLAUDE.md
+node_modules/
+package.json
+package-lock.json
