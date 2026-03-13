@@ -94,7 +94,11 @@ Plans:
   2. The README contains clear instructions for setting up Docker Desktop MCP Toolkit on the host before creating instances
   3. MCP connection works consistently across multiple running instances without conflicts
   4. User can optionally enable Claude Code remote control on a container at startup time
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Host-side integration: instance schema, env flags, --add-host detection, remote control prompt
+- [ ] 05-02-PLAN.md — Container entrypoint MCP/RC blocks + README Integrations section
 
 ### Phase 6: Settings + Documentation
 **Goal**: Users can browse and change all manager preferences through an interactive CLI menu, and the README fully represents the project's purpose, security posture, and setup requirements
@@ -119,5 +123,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Container Engine | 1/2 | In Progress|  |
 | 3. Backup + Data Safety | 2/2 | Complete   | 2026-03-13 |
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
-| 5. Integration Layer | 0/? | Not started | - |
+| 5. Integration Layer | 0/2 | Not started | - |
 | 6. Settings + Documentation | 0/? | Not started | - |
