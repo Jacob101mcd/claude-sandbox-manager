@@ -34,10 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 4/4 plans complete
 
 Plans:
-- [ ] 01-01-PLAN.md — Dockerfile security hardening + test infrastructure
-- [ ] 01-02-PLAN.md — Core library modules (common, platform, instances)
-- [ ] 01-03-PLAN.md — Docker and SSH modules with security hardening
-- [ ] 01-04-PLAN.md — Interactive menu + entry point integration
+- [x] 01-01-PLAN.md — Dockerfile security hardening + test infrastructure
+- [x] 01-02-PLAN.md — Core library modules (common, platform, instances)
+- [x] 01-03-PLAN.md — Docker and SSH modules with security hardening
+- [x] 01-04-PLAN.md — Interactive menu + entry point integration
 
 ### Phase 2: Container Engine
 **Goal**: Users can create, start, stop, SSH into, and remove sandbox instances running the minimal CLI container variant, with API key and GitHub credentials automatically available inside the container
@@ -49,7 +49,11 @@ Plans:
   3. Claude Code inside the container has access to ANTHROPIC_API_KEY without the user manually setting it
   4. GitHub CLI inside the container is authenticated with the user's token and can run `gh` commands
   5. Credentials are not present in the Docker image layers (verified by inspecting image history)
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Credential module + Dockerfile overhaul (native installer, gh CLI)
+- [ ] 02-02-PLAN.md — Credential injection wiring, container type selection, instance registry extension
 
 ### Phase 3: Backup + Data Safety
 **Goal**: Port the existing working backup/restore system to Linux and macOS, and add the optional auto-backup-on-startup toggle
@@ -104,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
-| 2. Container Engine | 0/? | Not started | - |
+| 2. Container Engine | 0/2 | Planning complete | - |
 | 3. Backup + Data Safety | 0/? | Not started | - |
 | 4. GUI Container Variant | 0/? | Not started | - |
 | 5. Integration Layer | 0/? | Not started | - |
