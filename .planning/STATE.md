@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-integration-layer-01 MCP/RC integration wiring
-last_updated: "2026-03-13T23:02:02.944Z"
+stopped_at: Completed 05-02 MCP entrypoint integration and README Integrations section
+last_updated: "2026-03-13T23:05:25.131Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
   percent: 92
 ---
 
@@ -60,6 +60,7 @@ Progress: [█████████░] 92%
 | Phase 04-gui-container-variant P01 | 1min | 2 tasks | 2 files |
 | Phase 04-gui-container-variant P02 | 7min | 2 tasks | 7 files |
 | Phase 05-integration-layer P01 | 4min | 2 tasks | 7 files |
+| Phase 05-integration-layer P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,8 @@ Recent decisions affecting current work:
 - [Phase 05-integration-layer]: jq has() used instead of // for boolean fields to avoid false being treated as absent
 - [Phase 05-integration-layer]: credentials_get_docker_env_flags takes optional instance name; backward compat when omitted
 - [Phase 05-integration-layer]: Remote control prompt in menu_action_new defaults to N per locked decision
+- [Phase 05-02]: curl probes gateway with HEAD first, falls back to GET to handle both HTTP and SSE endpoints
+- [Phase 05-02]: Underscore-prefixed vars in entrypoint.sh avoid namespace pollution at top-level script scope
 
 ### Pending Todos
 
@@ -113,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:02:02.924Z
-Stopped at: Completed 05-integration-layer-01 MCP/RC integration wiring
+Last session: 2026-03-13T23:05:25.113Z
+Stopped at: Completed 05-02 MCP entrypoint integration and README Integrations section
 Resume file: None
