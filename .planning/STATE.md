@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-13T21:47:25.946Z"
+stopped_at: Completed 04-01 GUI container Dockerfile and entrypoint
+last_updated: "2026-03-13T22:05:26.018Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
   percent: 92
 ---
 
@@ -57,6 +57,7 @@ Progress: [█████████░] 92%
 *Updated after each plan completion*
 | Phase 03 P01 | 2m15s | 1 tasks | 2 files |
 | Phase 03 P02 | 2min | 2 tasks | 3 files |
+| Phase 04-gui-container-variant P01 | 1min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 - [Phase 03]: _BACKUP_LISTED_DIRS global array populated by backup_list for caller use in selection menus
 - [Phase 03]: Auto-backup reads CSM_AUTO_BACKUP via credentials_load; silently skips when container status is not created
 - [Phase 03]: backup.sh sourced after docker.sh and before menu.sh: backup depends on docker functions, menu calls backup functions
+- [Phase 04-gui-container-variant]: GUI variant detected via 'command -v vncserver' — binary presence is authoritative, no env var needed
+- [Phase 04-gui-container-variant]: Multi-stage Dockerfile: base stage holds shared layers; cli/gui extend independently with their own EXPOSE and CMD
+- [Phase 04-gui-container-variant]: chromium-safe wrapper script provides --no-sandbox --disable-gpu --disable-dev-shm-usage for rootless container safety
 
 ### Pending Todos
 
@@ -103,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T21:47:25.930Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-gui-container-variant/04-CONTEXT.md
+Last session: 2026-03-13T22:05:26.001Z
+Stopped at: Completed 04-01 GUI container Dockerfile and entrypoint
+Resume file: None

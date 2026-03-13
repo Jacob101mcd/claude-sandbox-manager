@@ -17,9 +17,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Container Variants
 
 - [x] **CONT-01**: User can build and run a minimal CLI container (lightweight, headless)
-- [ ] **CONT-02**: User can build and run a GUI container with desktop environment and browser
+- [x] **CONT-02**: User can build and run a GUI container with desktop environment and browser
 - [x] **CONT-03**: Instance manager presents container type selection when creating new instances
-- [ ] **CONT-04**: GUI container runs Xvfb + noVNC for browser-based desktop access
+- [x] **CONT-04**: GUI container runs Xvfb + noVNC for browser-based desktop access
 - [ ] **CONT-05**: GUI containers start with adequate shared memory (--shm-size=512m minimum)
 
 ### Claude Code Installation
@@ -143,8 +143,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | BACK-02 | Phase 3 | Complete |
 | BACK-03 | Phase 3 | Complete |
 | BACK-04 | Phase 3 | Complete |
-| CONT-02 | Phase 4 | Pending |
-| CONT-04 | Phase 4 | Pending |
+| CONT-02 | Phase 4 | Complete |
+| CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 4 | Pending |
 | MCP-01 | Phase 5 | Pending |
 | MCP-02 | Phase 5 | Pending |
