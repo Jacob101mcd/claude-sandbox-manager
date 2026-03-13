@@ -128,3 +128,51 @@ teardown() {
     # No orphans expected in test env (no claude-sandbox containers running)
     [[ -z "$result" ]]
 }
+
+# ---------------------------------------------------------------------------
+# instances_add gui type -- vnc_port allocation
+# ---------------------------------------------------------------------------
+
+@test "instances_add gui type stores vnc_port in registry" {
+    instances_add "mygui" "gui"
+    result="$(jq -r '.mygui.vnc_port' "$CSM_ROOT/.instances.json")"
+    [[ "$result" =~ ^[0-9]+$ ]]
+}
+
+@test "instances_add cli type does not store vnc_port" {
+    instances_add "mycli" "cli"
+    result="$(jq -r '.mycli.vnc_port // empty' "$CSM_ROOT/.instances.json")"
+    [[ -z "$result" ]]
+}
+
+# ---------------------------------------------------------------------------
+# instances_get_vnc_port
+# ---------------------------------------------------------------------------
+
+@test "instances_get_vnc_port returns port for gui instance" {
+    instances_add "mygui" "gui"
+    result="$(instances_get_vnc_port "mygui")"
+    [[ "$result" =~ ^[0-9]+$ ]]
+}
+
+@test "instances_get_vnc_port returns empty for cli instance" {
+    instances_add "mycli" "cli"
+    result="$(instances_get_vnc_port "mycli")"
+    [[ -z "$result" ]]
+}
+
+# ---------------------------------------------------------------------------
+# instances_next_free_vnc_port
+# ---------------------------------------------------------------------------
+
+@test "instances_next_free_vnc_port returns 6080 when no gui instances" {
+    port="$(instances_next_free_vnc_port)"
+    [[ "$port" == "6080" ]]
+}
+
+@test "instances_next_free_vnc_port skips allocated ports" {
+    instances_add "first" "gui"
+    port="$(instances_next_free_vnc_port)"
+    # Should be 6081 since 6080 is taken
+    [[ "$port" == "6081" ]]
+}
