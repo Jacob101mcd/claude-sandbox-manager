@@ -25,7 +25,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Claude Code Installation
 
 - [x] **INST-01**: Claude Code installed via native installer (not NPM) during container build
-- [ ] **INST-02**: Claude Code remote control optionally configured on container startup
+- [x] **INST-02**: Claude Code remote control optionally configured on container startup
 
 ### Credential Management
 
@@ -50,9 +50,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### MCP Integration
 
-- [ ] **MCP-01**: Sandbox instances automatically connect to host Docker MCP Toolkit server on startup
+- [x] **MCP-01**: Sandbox instances automatically connect to host Docker MCP Toolkit server on startup
 - [ ] **MCP-02**: README includes instructions for setting up Docker Desktop MCP Toolkit on the host
-- [ ] **MCP-03**: MCP connection works without per-container MCP configuration
+- [x] **MCP-03**: MCP connection works without per-container MCP configuration
 
 ### Code Quality
 
@@ -146,10 +146,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | CONT-02 | Phase 4 | Complete |
 | CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 4 | Complete |
-| MCP-01 | Phase 5 | Pending |
+| MCP-01 | Phase 5 | Complete |
 | MCP-02 | Phase 5 | Pending |
-| MCP-03 | Phase 5 | Pending |
-| INST-02 | Phase 5 | Pending |
+| MCP-03 | Phase 5 | Complete |
+| INST-02 | Phase 5 | Complete |
 | SETT-01 | Phase 6 | Pending |
 | SETT-02 | Phase 6 | Pending |
 | SETT-03 | Phase 6 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-13T22:42:19.338Z"
+stopped_at: Completed 05-integration-layer-01 MCP/RC integration wiring
+last_updated: "2026-03-13T23:02:02.944Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 12
+  completed_plans: 11
   percent: 92
 ---
 
@@ -59,6 +59,7 @@ Progress: [█████████░] 92%
 | Phase 03 P02 | 2min | 2 tasks | 3 files |
 | Phase 04-gui-container-variant P01 | 1min | 2 tasks | 2 files |
 | Phase 04-gui-container-variant P02 | 7min | 2 tasks | 7 files |
+| Phase 05-integration-layer P01 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 04-gui-container-variant]: Multi-stage Dockerfile: base stage holds shared layers; cli/gui extend independently with their own EXPOSE and CMD
 - [Phase 04-gui-container-variant]: chromium-safe wrapper script provides --no-sandbox --disable-gpu --disable-dev-shm-usage for rootless container safety
 - [Phase 04-gui-container-variant]: vnc_port allocation mirrors ssh port pattern starting at 6080, type-suffixed image tags distinguish cli/gui builds
+- [Phase 05-integration-layer]: jq has() used instead of // for boolean fields to avoid false being treated as absent
+- [Phase 05-integration-layer]: credentials_get_docker_env_flags takes optional instance name; backward compat when omitted
+- [Phase 05-integration-layer]: Remote control prompt in menu_action_new defaults to N per locked decision
 
 ### Pending Todos
 
@@ -109,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:42:19.322Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-integration-layer/05-CONTEXT.md
+Last session: 2026-03-13T23:02:02.924Z
+Stopped at: Completed 05-integration-layer-01 MCP/RC integration wiring
+Resume file: None
