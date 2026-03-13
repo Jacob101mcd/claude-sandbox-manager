@@ -65,7 +65,11 @@ Plans:
   2. After restore, the container's workspace directory contains the same files as before backup
   3. Auto-backup can be toggled on; when on, a backup archive is created each time an instance starts
   4. User can restore an instance from a specific backup archive and have it running via SSH
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Backup module with backup_create, backup_restore, backup_list + BATS tests
+- [ ] 03-02-PLAN.md — Menu integration (B/E actions), auto-backup hook, entry point wiring
 
 ### Phase 4: GUI Container Variant
 **Goal**: Users can create a GUI container instance and access a full desktop environment with a browser through a web URL, with no VNC client installation required
@@ -109,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
 | 2. Container Engine | 1/2 | In Progress|  |
-| 3. Backup + Data Safety | 0/? | Not started | - |
+| 3. Backup + Data Safety | 0/2 | Not started | - |
 | 4. GUI Container Variant | 0/? | Not started | - |
 | 5. Integration Layer | 0/? | Not started | - |
 | 6. Settings + Documentation | 0/? | Not started | - |
