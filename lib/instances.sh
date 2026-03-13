@@ -6,6 +6,7 @@
 #
 # Provides: instances_get_all, instances_add, instances_remove,
 #           instances_get_port, instances_next_free_port,
+#           instances_get_vnc_port, instances_next_free_vnc_port,
 #           instances_detect_orphans, instances_list_with_status
 
 # Registry file path
@@ -43,10 +44,19 @@ instances_add() {
 
     port="$(instances_next_free_port)"
 
-    jq --arg name "$name" --argjson port "$port" --arg type "$type" \
-        '.[$name] = { "port": $port, "type": $type }' \
-        "$_INSTANCES_FILE" > "${_INSTANCES_FILE}.tmp" \
-        && mv "${_INSTANCES_FILE}.tmp" "$_INSTANCES_FILE"
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_next_free_vnc_port)"
+        jq --arg name "$name" --argjson port "$port" --arg type "$type" --argjson vnc_port "$vnc_port" \
+            '.[$name] = { "port": $port, "type": $type, "vnc_port": $vnc_port }' \
+            "$_INSTANCES_FILE" > "${_INSTANCES_FILE}.tmp" \
+            && mv "${_INSTANCES_FILE}.tmp" "$_INSTANCES_FILE"
+    else
+        jq --arg name "$name" --argjson port "$port" --arg type "$type" \
+            '.[$name] = { "port": $port, "type": $type }' \
+            "$_INSTANCES_FILE" > "${_INSTANCES_FILE}.tmp" \
+            && mv "${_INSTANCES_FILE}.tmp" "$_INSTANCES_FILE"
+    fi
 
     echo "$port"
 }
@@ -140,6 +150,63 @@ instances_next_free_port() {
 }
 
 # ---------------------------------------------------------------------------
+# instances_next_free_vnc_port -- Find next available VNC/noVNC port starting at 6080
+# Checks both the registry and actual system port usage (via ss)
+# Returns: port number (stdout)
+# ---------------------------------------------------------------------------
+instances_next_free_vnc_port() {
+    local port=6080
+
+    _instances_ensure_file
+
+    # Collect vnc_ports already allocated in the registry
+    local registry_vnc_ports
+    registry_vnc_ports="$(jq -r '.[].vnc_port // empty' "$_INSTANCES_FILE" 2>/dev/null)"
+
+    while true; do
+        # Check if port is in registry
+        local in_registry=false
+        local rp
+        for rp in $registry_vnc_ports; do
+            if [[ "$rp" == "$port" ]]; then
+                in_registry=true
+                break
+            fi
+        done
+
+        if $in_registry; then
+            (( port++ ))
+            continue
+        fi
+
+        # Check if port is in actual use on the system
+        if command -v ss &>/dev/null; then
+            if ss -tln 2>/dev/null | grep -q ":${port} "; then
+                (( port++ ))
+                continue
+            fi
+        fi
+
+        break
+    done
+
+    echo "$port"
+}
+
+# ---------------------------------------------------------------------------
+# instances_get_vnc_port -- Look up the noVNC port for a named GUI instance
+# Args: $1 = instance name
+# Returns: vnc_port number (stdout), or empty if not set (CLI instances)
+# ---------------------------------------------------------------------------
+instances_get_vnc_port() {
+    local name="$1"
+
+    _instances_ensure_file
+
+    jq -r --arg name "$name" '.[$name].vnc_port // empty' "$_INSTANCES_FILE"
+}
+
+# ---------------------------------------------------------------------------
 # instances_detect_orphans -- Find Docker containers not in the registry
 # Compares docker ps against registry keys. Prints orphan container names.
 # Returns: one container name per line (stdout), empty if none
@@ -205,7 +272,13 @@ instances_list_with_status() {
         local status
         status="$(docker inspect --format '{{.State.Status}}' "$container_name" 2>/dev/null)" || status="not found"
 
-        msg_info "$name [$type] (port $port) - $status"
+        if [[ "$type" == "gui" ]]; then
+            local vnc_port
+            vnc_port="$(instances_get_vnc_port "$name")"
+            msg_info "$name [$type] (ssh:$port vnc:$vnc_port) - $status"
+        else
+            msg_info "$name [$type] (port $port) - $status"
+        fi
     done
 
     # List orphans

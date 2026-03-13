@@ -25,10 +25,13 @@ docker_check_running() {
 # ---------------------------------------------------------------------------
 docker_build() {
     local name="$1"
-    local image_tag="claude-sandbox-${name}"
+    local type
+    type="$(instances_get_type "$name")"
+    local target="${type}"
+    local image_tag="claude-sandbox-${name}-${type}"
 
-    msg_info "Building Docker image ${image_tag}..."
-    if ! docker build -t "$image_tag" -f "${CSM_ROOT}/scripts/Dockerfile" "$CSM_ROOT"; then
+    msg_info "Building Docker image ${image_tag} (target: ${target})..."
+    if ! docker build -t "$image_tag" --target "$target" -f "${CSM_ROOT}/scripts/Dockerfile" "$CSM_ROOT"; then
         die "Docker build failed for ${image_tag}"
     fi
     msg_ok "Docker image built: ${image_tag}"
@@ -45,6 +48,11 @@ docker_run_instance() {
     container_name="$(common_container_name "$name")"
     local workspace_dir
     workspace_dir="$(common_workspace_dir "$name")"
+
+    # Read instance type for type-aware configuration
+    local type
+    type="$(instances_get_type "$name")"
+    local image_tag="claude-sandbox-${name}-${type}"
 
     # Ensure workspace directory exists
     mkdir -p "$workspace_dir"
@@ -70,12 +78,20 @@ docker_run_instance() {
     cmd+=(--cap-drop=FSETID)                          # SEC-03
     cmd+=(--restart unless-stopped)
 
+    # GUI-specific flags: shared memory and noVNC port mapping
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        cmd+=(-p "127.0.0.1:${vnc_port}:6080")       # noVNC WebSocket port
+        cmd+=(--shm-size=512m)                        # Shared memory for browser/GPU
+    fi
+
     # Inject credentials as -e flags (from .env via credentials module)
     credentials_load || true
     credentials_get_docker_env_flags
     cmd+=("${CSM_DOCKER_ENV_FLAGS[@]}")
 
-    cmd+=("claude-sandbox-${name}")
+    cmd+=("$image_tag")
 
     msg_info "Starting container ${container_name} on port ${port}..."
     if ! "${cmd[@]}"; then
