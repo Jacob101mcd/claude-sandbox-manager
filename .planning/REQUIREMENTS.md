@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Backup & Data Safety
 
 - [x] **BACK-01**: User can manually trigger full container backup via docker export
-- [ ] **BACK-02**: Optional auto-backup on instance startup (togglable via settings)
+- [x] **BACK-02**: Optional auto-backup on instance startup (togglable via settings)
 - [x] **BACK-03**: Backup captures both container filesystem and workspace volume data
 - [x] **BACK-04**: User can restore an instance from a backup
 
@@ -140,7 +140,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | CRED-03 | Phase 2 | Complete |
 | CRED-04 | Phase 2 | Complete |
 | BACK-01 | Phase 3 | Complete |
-| BACK-02 | Phase 3 | Pending |
+| BACK-02 | Phase 3 | Complete |
 | BACK-03 | Phase 3 | Complete |
 | BACK-04 | Phase 3 | Complete |
 | CONT-02 | Phase 4 | Pending |

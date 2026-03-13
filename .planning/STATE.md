@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-01 Backup Module
-last_updated: "2026-03-13T21:21:22.919Z"
+stopped_at: Completed 03-02 Backup Integration
+last_updated: "2026-03-13T21:25:10.598Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 92
 ---
 
@@ -56,6 +56,7 @@ Progress: [█████████░] 92%
 
 *Updated after each plan completion*
 | Phase 03 P01 | 2m15s | 1 tasks | 2 files |
+| Phase 03 P02 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 02 P02]: test_helper.bash adds ~/.local/bin to PATH for jq in BATS tests
 - [Phase 03]: Duplicate docker run flags from docker_run_instance into backup_restore with sync comment to avoid tight coupling while keeping security hardening
 - [Phase 03]: _BACKUP_LISTED_DIRS global array populated by backup_list for caller use in selection menus
+- [Phase 03]: Auto-backup reads CSM_AUTO_BACKUP via credentials_load; silently skips when container status is not created
+- [Phase 03]: backup.sh sourced after docker.sh and before menu.sh: backup depends on docker functions, menu calls backup functions
 
 ### Pending Todos
 
@@ -100,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T21:21:22.906Z
-Stopped at: Completed 03-01 Backup Module
+Last session: 2026-03-13T21:25:10.583Z
+Stopped at: Completed 03-02 Backup Integration
 Resume file: None
