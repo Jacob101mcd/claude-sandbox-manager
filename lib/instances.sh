@@ -31,23 +31,39 @@ instances_get_all() {
 
 # ---------------------------------------------------------------------------
 # instances_add -- Register a new instance with an allocated port
-# Args: $1 = instance name
+# Args: $1 = instance name, $2 = container type (default: "cli")
 # Returns: allocated port number (stdout)
 # ---------------------------------------------------------------------------
 instances_add() {
     local name="$1"
+    local type="${2:-cli}"
     local port
 
     _instances_ensure_file
 
     port="$(instances_next_free_port)"
 
-    jq --arg name "$name" --argjson port "$port" \
-        '.[$name] = { "port": $port }' \
+    jq --arg name "$name" --argjson port "$port" --arg type "$type" \
+        '.[$name] = { "port": $port, "type": $type }' \
         "$_INSTANCES_FILE" > "${_INSTANCES_FILE}.tmp" \
         && mv "${_INSTANCES_FILE}.tmp" "$_INSTANCES_FILE"
 
     echo "$port"
+}
+
+# ---------------------------------------------------------------------------
+# instances_get_type -- Look up the container type for a named instance
+# Args: $1 = instance name
+# Returns: type string (stdout), defaults to "cli" for backward compat
+# ---------------------------------------------------------------------------
+instances_get_type() {
+    local name="$1"
+
+    _instances_ensure_file
+
+    local type
+    type="$(jq -r --arg name "$name" '.[$name].type // "cli"' "$_INSTANCES_FILE")"
+    echo "$type"
 }
 
 # ---------------------------------------------------------------------------
@@ -183,10 +199,13 @@ instances_list_with_status() {
         local container_name
         container_name="$(common_container_name "$name")"
 
+        local type
+        type="$(instances_get_type "$name")"
+
         local status
         status="$(docker inspect --format '{{.State.Status}}' "$container_name" 2>/dev/null)" || status="not found"
 
-        msg_info "$name (port $port) - $status"
+        msg_info "$name [$type] (port $port) - $status"
     done
 
     # List orphans

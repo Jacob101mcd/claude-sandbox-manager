@@ -39,3 +39,25 @@ load test_helper
 @test "docker.sh removes existing container before run" {
   grep -q 'docker rm -f' "$CSM_ROOT/lib/docker.sh"
 }
+
+@test "docker.sh injects credentials via -e flags" {
+  grep -q 'credentials_load' "$CSM_ROOT/lib/docker.sh"
+  grep -q 'credentials_get_docker_env_flags' "$CSM_ROOT/lib/docker.sh"
+  grep -q 'CSM_DOCKER_ENV_FLAGS' "$CSM_ROOT/lib/docker.sh"
+}
+
+@test "docker.sh calls credentials_ensure_env_file on start" {
+  grep -q 'credentials_ensure_env_file' "$CSM_ROOT/lib/docker.sh"
+}
+
+@test "credentials_get_docker_env_flags builds -e flags for set credentials" {
+  source "$CSM_ROOT/lib/common.sh"
+  source "$CSM_ROOT/lib/credentials.sh"
+  export ANTHROPIC_API_KEY="test-key-123"
+  export GITHUB_TOKEN="gh-token-456"
+  credentials_get_docker_env_flags
+  local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
+  [[ "$flags" == *"-e"* ]]
+  [[ "$flags" == *"ANTHROPIC_API_KEY=test-key-123"* ]]
+  [[ "$flags" == *"GITHUB_TOKEN=gh-token-456"* ]]
+}

@@ -14,6 +14,7 @@ export CSM_ROOT
 
 # Source library modules in dependency order
 source "$CSM_ROOT/lib/common.sh"
+source "$CSM_ROOT/lib/credentials.sh"
 source "$CSM_ROOT/lib/platform.sh"
 source "$CSM_ROOT/lib/instances.sh"
 source "$CSM_ROOT/lib/ssh.sh"

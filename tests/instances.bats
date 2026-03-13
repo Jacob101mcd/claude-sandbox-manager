@@ -83,6 +83,40 @@ teardown() {
 }
 
 # ---------------------------------------------------------------------------
+# instances_add -- type field
+# ---------------------------------------------------------------------------
+
+@test "instances_add stores type field in JSON" {
+    instances_add "test" "cli"
+    result="$(jq -r '.test.type' "$CSM_ROOT/.instances.json")"
+    [[ "$result" == "cli" ]]
+}
+
+@test "instances_add defaults to cli when no type parameter given" {
+    instances_add "test"
+    result="$(jq -r '.test.type' "$CSM_ROOT/.instances.json")"
+    [[ "$result" == "cli" ]]
+}
+
+# ---------------------------------------------------------------------------
+# instances_get_type
+# ---------------------------------------------------------------------------
+
+@test "instances_get_type returns stored type" {
+    instances_add "test" "cli"
+    result="$(instances_get_type "test")"
+    [[ "$result" == "cli" ]]
+}
+
+@test "instances_get_type returns cli for entries without type field (backward compat)" {
+    _instances_ensure_file
+    # Write a legacy entry without type field
+    echo '{"legacy": {"port": 2222}}' > "$CSM_ROOT/.instances.json"
+    result="$(instances_get_type "legacy")"
+    [[ "$result" == "cli" ]]
+}
+
+# ---------------------------------------------------------------------------
 # instances_detect_orphans (requires docker -- skip if unavailable)
 # ---------------------------------------------------------------------------
 

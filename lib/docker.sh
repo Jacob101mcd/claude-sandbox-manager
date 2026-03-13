@@ -69,6 +69,12 @@ docker_run_instance() {
     cmd+=(--cap-drop=SYS_CHROOT)                      # SEC-03
     cmd+=(--cap-drop=FSETID)                          # SEC-03
     cmd+=(--restart unless-stopped)
+
+    # Inject credentials as -e flags (from .env via credentials module)
+    credentials_load || true
+    credentials_get_docker_env_flags
+    cmd+=("${CSM_DOCKER_ENV_FLAGS[@]}")
+
     cmd+=("claude-sandbox-${name}")
 
     msg_info "Starting container ${container_name} on port ${port}..."
@@ -114,6 +120,9 @@ docker_status() {
 # ---------------------------------------------------------------------------
 docker_start_instance() {
     local name="$1"
+
+    # Ensure .env template exists on first use
+    credentials_ensure_env_file
 
     docker_check_running
 
