@@ -31,7 +31,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Platform-specific paths and commands (Linux vs macOS vs Windows) are detected and handled without user configuration
   4. The Dockerfile no longer contains a hardcoded password; SSH is bound to localhost only
   5. Orphaned/stale container instances appear in the instance list and can be detected by the manager
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Dockerfile security hardening + test infrastructure
+- [ ] 01-02-PLAN.md — Core library modules (common, platform, instances)
+- [ ] 01-03-PLAN.md — Docker and SSH modules with security hardening
+- [ ] 01-04-PLAN.md — Interactive menu + entry point integration
 
 ### Phase 2: Container Engine
 **Goal**: Users can create, start, stop, SSH into, and remove sandbox instances running the minimal CLI container variant, with API key and GitHub credentials automatically available inside the container
@@ -97,7 +103,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Security | 0/? | Not started | - |
+| 1. Foundation + Security | 0/4 | Planning complete | - |
 | 2. Container Engine | 0/? | Not started | - |
 | 3. Backup + Data Safety | 0/? | Not started | - |
 | 4. GUI Container Variant | 0/? | Not started | - |
