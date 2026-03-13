@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PLAT-01**: Manager scripts run natively on Linux without modification
 - [ ] **PLAT-02**: Manager scripts run natively on macOS without modification
 - [ ] **PLAT-03**: Existing Windows support maintained alongside Linux/macOS
-- [ ] **PLAT-04**: Platform-specific differences (paths, commands) detected and handled automatically
+- [x] **PLAT-04**: Platform-specific differences (paths, commands) detected and handled automatically
 
 ### Container Variants
 
@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Code Quality
 
-- [ ] **QUAL-01**: Codebase restructured with clear separation of concerns (no monolithic scripts)
+- [x] **QUAL-01**: Codebase restructured with clear separation of concerns (no monolithic scripts)
 - [x] **QUAL-02**: Code follows Docker best practices (multi-stage builds, minimal layers, no root)
 - [ ] **QUAL-03**: Code follows Claude Code best practices for sandbox environments
 - [x] **QUAL-04**: Consistent coding style and naming conventions across all scripts
@@ -78,8 +78,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Bug Fixes
 
-- [ ] **BUG-01**: Rebuilt containers no longer pile up as orphaned instances in Docker
-- [ ] **BUG-02**: Manager detects and displays all existing container instances (including orphaned)
+- [x] **BUG-01**: Rebuilt containers no longer pile up as orphaned instances in Docker
+- [x] **BUG-02**: Manager detects and displays all existing container instances (including orphaned)
 
 ## v2 Requirements
 
@@ -121,8 +121,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | PLAT-01 | Phase 1 | Pending |
 | PLAT-02 | Phase 1 | Pending |
 | PLAT-03 | Phase 1 | Pending |
-| PLAT-04 | Phase 1 | Pending |
-| QUAL-01 | Phase 1 | Pending |
+| PLAT-04 | Phase 1 | Complete |
+| QUAL-01 | Phase 1 | Complete |
 | QUAL-02 | Phase 1 | Complete |
 | QUAL-03 | Phase 1 | Pending |
 | QUAL-04 | Phase 1 | Complete |
@@ -130,8 +130,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | SEC-02 | Phase 1 | Pending |
 | SEC-03 | Phase 1 | Pending |
 | SEC-04 | Phase 1 | Pending |
-| BUG-01 | Phase 1 | Pending |
-| BUG-02 | Phase 1 | Pending |
+| BUG-01 | Phase 1 | Complete |
+| BUG-02 | Phase 1 | Complete |
 | CONT-01 | Phase 2 | Pending |
 | CONT-03 | Phase 2 | Pending |
 | INST-01 | Phase 2 | Pending |
