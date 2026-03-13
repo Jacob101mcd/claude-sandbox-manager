@@ -176,3 +176,67 @@ teardown() {
     # Should be 6081 since 6080 is taken
     [[ "$port" == "6081" ]]
 }
+
+# ---------------------------------------------------------------------------
+# MCP / remote_control fields -- new fields added in phase 05
+# ---------------------------------------------------------------------------
+
+@test "instances_add stores mcp_enabled true by default" {
+    instances_add "test" "cli"
+    result="$(jq -r '.test.mcp_enabled' "$CSM_ROOT/.instances.json")"
+    [[ "$result" == "true" ]]
+}
+
+@test "instances_add stores remote_control false by default" {
+    instances_add "test" "cli"
+    result="$(jq -r '.test.remote_control' "$CSM_ROOT/.instances.json")"
+    [[ "$result" == "false" ]]
+}
+
+@test "instances_add gui type stores mcp_enabled true by default" {
+    instances_add "mygui" "gui"
+    result="$(jq -r '.mygui.mcp_enabled' "$CSM_ROOT/.instances.json")"
+    [[ "$result" == "true" ]]
+}
+
+@test "instances_get_mcp_enabled returns true for new instance" {
+    instances_add "test" "cli"
+    result="$(instances_get_mcp_enabled "test")"
+    [[ "$result" == "true" ]]
+}
+
+@test "instances_get_remote_control returns false for new instance" {
+    instances_add "test" "cli"
+    result="$(instances_get_remote_control "test")"
+    [[ "$result" == "false" ]]
+}
+
+@test "instances_set_remote_control updates field" {
+    instances_add "test" "cli"
+    instances_set_remote_control "test" true
+    result="$(instances_get_remote_control "test")"
+    [[ "$result" == "true" ]]
+}
+
+@test "instances_set_mcp_enabled updates field" {
+    instances_add "test" "cli"
+    instances_set_mcp_enabled "test" false
+    result="$(instances_get_mcp_enabled "test")"
+    [[ "$result" == "false" ]]
+}
+
+@test "backward compat: instances without mcp_enabled default to true" {
+    _instances_ensure_file
+    # Write a legacy entry without mcp_enabled field
+    echo '{"legacy": {"port": 2222, "type": "cli"}}' > "$CSM_ROOT/.instances.json"
+    result="$(instances_get_mcp_enabled "legacy")"
+    [[ "$result" == "true" ]]
+}
+
+@test "backward compat: instances without remote_control default to false" {
+    _instances_ensure_file
+    # Write a legacy entry without remote_control field
+    echo '{"legacy": {"port": 2222, "type": "cli"}}' > "$CSM_ROOT/.instances.json"
+    result="$(instances_get_remote_control "legacy")"
+    [[ "$result" == "false" ]]
+}

@@ -81,9 +81,11 @@ credentials_load() {
 
 # ---------------------------------------------------------------------------
 # credentials_get_docker_env_flags -- Build docker -e flags for set credentials
+# Args: $1 = instance name (optional) -- when provided, injects MCP/RC flags
 # Populates global array CSM_DOCKER_ENV_FLAGS
 # ---------------------------------------------------------------------------
 credentials_get_docker_env_flags() {
+    local instance_name="${1:-}"
     CSM_DOCKER_ENV_FLAGS=()
 
     local key
@@ -94,4 +96,20 @@ credentials_get_docker_env_flags() {
             msg_warn "Credential ${key} is not set -- it will not be passed to the container"
         fi
     done
+
+    # Integration flags: MCP and remote control env vars (requires instance context)
+    if [[ -n "$instance_name" ]]; then
+        local mcp_enabled
+        mcp_enabled="$(instances_get_mcp_enabled "$instance_name")"
+        if [[ "$mcp_enabled" == "true" ]]; then
+            CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_MCP_ENABLED=1")
+            CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_MCP_PORT=${CSM_MCP_PORT:-8811}")
+        fi
+
+        local remote_control
+        remote_control="$(instances_get_remote_control "$instance_name")"
+        if [[ "$remote_control" == "true" ]]; then
+            CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_REMOTE_CONTROL=1")
+        fi
+    fi
 }

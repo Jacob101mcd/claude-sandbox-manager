@@ -88,7 +88,7 @@ docker_run_instance() {
 
     # Inject credentials as -e flags (from .env via credentials module)
     credentials_load || true
-    credentials_get_docker_env_flags
+    credentials_get_docker_env_flags "$name"
     cmd+=("${CSM_DOCKER_ENV_FLAGS[@]}")
 
     cmd+=("$image_tag")

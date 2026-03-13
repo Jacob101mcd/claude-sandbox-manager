@@ -242,3 +242,38 @@ teardown() {
     done
     $found
 }
+
+# ---------------------------------------------------------------------------
+# MCP and remote control env flags -- phase 05 additions
+# ---------------------------------------------------------------------------
+
+@test "credentials_get_docker_env_flags includes CSM_MCP_ENABLED for mcp-enabled instance" {
+    instances_add "testmcp" "cli"
+    # mcp_enabled defaults to true
+    credentials_get_docker_env_flags "testmcp"
+    local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
+    [[ "$flags" == *"CSM_MCP_ENABLED=1"* ]]
+}
+
+@test "credentials_get_docker_env_flags includes CSM_MCP_PORT for mcp-enabled instance" {
+    instances_add "testmcp" "cli"
+    credentials_get_docker_env_flags "testmcp"
+    local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
+    [[ "$flags" == *"CSM_MCP_PORT="* ]]
+}
+
+@test "credentials_get_docker_env_flags includes CSM_REMOTE_CONTROL for rc-enabled instance" {
+    instances_add "testrc" "cli"
+    instances_set_remote_control "testrc" true
+    credentials_get_docker_env_flags "testrc"
+    local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
+    [[ "$flags" == *"CSM_REMOTE_CONTROL=1"* ]]
+}
+
+@test "credentials_get_docker_env_flags omits CSM_REMOTE_CONTROL when rc disabled" {
+    instances_add "testnrc" "cli"
+    # remote_control defaults to false
+    credentials_get_docker_env_flags "testnrc"
+    local flags="${CSM_DOCKER_ENV_FLAGS[*]}"
+    [[ "$flags" != *"CSM_REMOTE_CONTROL"* ]]
+}
