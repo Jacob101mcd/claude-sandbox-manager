@@ -79,7 +79,11 @@ Plans:
   1. User can select "GUI" container type at creation time and have it build and start without additional steps
   2. User can open a browser and reach the container's desktop environment at a localhost URL
   3. A browser opened inside the container desktop renders web pages correctly (shared memory is sufficient — no crash on page load)
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Multi-stage Dockerfile (base/cli/gui) + entrypoint VNC startup
+- [ ] 04-02-PLAN.md — VNC port allocation, type-aware build/run, GUI menu activation + BATS tests
 
 ### Phase 5: Integration Layer
 **Goal**: All sandbox instances automatically connect to the host Docker Desktop MCP Toolkit server on startup, and Claude Code remote control is available as an optional toggle
@@ -114,6 +118,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
 | 2. Container Engine | 1/2 | In Progress|  |
 | 3. Backup + Data Safety | 2/2 | Complete   | 2026-03-13 |
-| 4. GUI Container Variant | 0/? | Not started | - |
+| 4. GUI Container Variant | 0/2 | Not started | - |
 | 5. Integration Layer | 0/? | Not started | - |
 | 6. Settings + Documentation | 0/? | Not started | - |
