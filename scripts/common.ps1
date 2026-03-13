@@ -2,6 +2,7 @@
 
 $Script:Root = Split-Path -Parent $PSScriptRoot
 $Script:InstancesFile = "$Script:Root\.instances.json"
+$Script:EnvFile = "$Script:Root\.env"
 
 function Get-Instances {
     if (Test-Path $Script:InstancesFile) {
@@ -74,6 +75,56 @@ function Get-WorkspaceDir($Name) {
 
 function Get-BackupDir($Name) {
     return "$Script:Root\backups\$Name"
+}
+
+function Ensure-EnvFile {
+    if (-not (Test-Path $Script:EnvFile)) {
+        $template = "# Claude Sandbox Manager - Credentials`n" +
+            "# These are injected into containers at runtime (never baked into images).`n" +
+            "# Fill in your keys and save this file.`n`n" +
+            "ANTHROPIC_API_KEY=`n" +
+            "GITHUB_TOKEN=`n"
+        $template | Set-Content $Script:EnvFile -Encoding UTF8 -NoNewline
+        Write-Host "[!] Created .env template at $Script:EnvFile - add your API keys" -ForegroundColor Yellow
+    }
+}
+
+function Get-EnvCredentials {
+    $creds = @{}
+    if (-not (Test-Path $Script:EnvFile)) {
+        return $creds
+    }
+    foreach ($line in Get-Content $Script:EnvFile) {
+        $line = $line.Trim()
+        if ($line -eq "" -or $line.StartsWith("#")) { continue }
+        if ($line -match '^([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
+            $key = $Matches[1]
+            $val = $Matches[2].Trim()
+            # Strip surrounding quotes
+            if (($val.StartsWith('"') -and $val.EndsWith('"')) -or
+                ($val.StartsWith("'") -and $val.EndsWith("'"))) {
+                $val = $val.Substring(1, $val.Length - 2)
+            }
+            if ($val -ne "") {
+                $creds[$key] = $val
+            }
+        }
+    }
+    return $creds
+}
+
+function Get-DockerEnvFlags {
+    $creds = Get-EnvCredentials
+    $flags = @()
+    foreach ($key in @("ANTHROPIC_API_KEY", "GITHUB_TOKEN")) {
+        if ($creds.ContainsKey($key)) {
+            $flags += "-e"
+            $flags += "$key=$($creds[$key])"
+        } else {
+            Write-Host "[!] Credential '$key' not set in .env" -ForegroundColor Yellow
+        }
+    }
+    return $flags
 }
 
 function Get-ContainerStatus($Name) {
@@ -210,8 +261,13 @@ function Write-SshConfig($Name, $Port) {
     if (-not (Test-Path $safeKeyDir)) {
         New-Item -ItemType Directory -Path $safeKeyDir | Out-Null
     }
-    Copy-Item -Force $srcKeyPath "$safeKeyDir\id_claude"
     $safeKeyPath = "$safeKeyDir\id_claude"
+    # Reset permissions before copy - previous icacls may have set read-only
+    if (Test-Path $safeKeyPath) {
+        icacls $safeKeyPath /grant "${env:USERNAME}:(F)" 2>$null | Out-Null
+    }
+    Copy-Item -Force $srcKeyPath $safeKeyPath
+    # Lock down: remove inheritance, grant read-only (required by OpenSSH)
     icacls $safeKeyPath /inheritance:r /grant:r "${env:USERNAME}:(R)" 2>$null | Out-Null
 
     $hostBlock = @"
@@ -283,13 +339,19 @@ function Start-SandboxInstance($Name) {
     docker stop $containerName 2>$null
     docker rm $containerName 2>$null
 
+    # Load credentials from .env
+    Ensure-EnvFile
+    $envFlags = Get-DockerEnvFlags
+
     # Run new container
-    docker run -d --name $containerName `
-        -p "${port}:22" `
-        -v "${wsDir}:/home/claude/workspace" `
-        -w /home/claude/workspace `
-        --restart unless-stopped `
-        $imageName
+    $runArgs = @("run", "-d", "--name", $containerName,
+        "-p", "${port}:22",
+        "-v", "${wsDir}:/home/claude/workspace",
+        "-w", "/home/claude/workspace",
+        "--restart", "unless-stopped")
+    $runArgs += $envFlags
+    $runArgs += $imageName
+    & docker @runArgs
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "`n[X] Docker run failed." -ForegroundColor Red

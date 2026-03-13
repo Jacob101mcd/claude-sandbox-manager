@@ -36,13 +36,19 @@ if ($LASTEXITCODE -ne 0) {
     pause; exit 1
 }
 
+# Load credentials from .env
+Ensure-EnvFile
+$envFlags = @(Get-DockerEnvFlags)
+
 # Run new container
-docker run -d --name $containerName `
-    -p "${port}:22" `
-    -v "${wsDir}:/home/claude/workspace" `
-    -w /home/claude/workspace `
-    --restart unless-stopped `
-    $imageName
+$runArgs = [System.Collections.ArrayList]@("run", "-d", "--name", $containerName,
+    "-p", "${port}:22",
+    "-v", "${wsDir}:/home/claude/workspace",
+    "-w", "/home/claude/workspace",
+    "--restart", "unless-stopped")
+foreach ($f in $envFlags) { $runArgs.Add($f) | Out-Null }
+$runArgs.Add($imageName) | Out-Null
+& docker $runArgs
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "`n[X] Failed to start container." -ForegroundColor Red

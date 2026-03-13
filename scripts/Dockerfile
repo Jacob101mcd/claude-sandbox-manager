@@ -59,5 +59,8 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/claude/.bashrc \
 RUN npx -y get-shit-done-cc@latest --global
 USER root
 
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/local/bin/entrypoint.sh"]
