@@ -1,0 +1,170 @@
+# Requirements: Claude Sandbox Manager
+
+**Defined:** 2026-03-13
+**Core Value:** Safe, hands-free Claude Code sandboxes that anyone can spin up without Docker expertise
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Cross-Platform
+
+- [ ] **PLAT-01**: Manager scripts run natively on Linux without modification
+- [ ] **PLAT-02**: Manager scripts run natively on macOS without modification
+- [ ] **PLAT-03**: Existing Windows support maintained alongside Linux/macOS
+- [ ] **PLAT-04**: Platform-specific differences (paths, commands) detected and handled automatically
+
+### Container Variants
+
+- [ ] **CONT-01**: User can build and run a minimal CLI container (lightweight, headless)
+- [ ] **CONT-02**: User can build and run a GUI container with desktop environment and browser
+- [ ] **CONT-03**: Instance manager presents container type selection when creating new instances
+- [ ] **CONT-04**: GUI container runs Xvfb + noVNC for browser-based desktop access
+- [ ] **CONT-05**: GUI containers start with adequate shared memory (--shm-size=512m minimum)
+
+### Claude Code Installation
+
+- [ ] **INST-01**: Claude Code installed via native installer (not NPM) during container build
+- [ ] **INST-02**: Claude Code remote control optionally configured on container startup
+
+### Credential Management
+
+- [ ] **CRED-01**: ANTHROPIC_API_KEY automatically injected into container environment
+- [ ] **CRED-02**: GitHub CLI pre-installed in containers
+- [ ] **CRED-03**: GitHub CLI auto-authenticated with user-provided token on container build
+- [ ] **CRED-04**: Credentials never baked into Docker images (runtime injection only)
+
+### Settings Management
+
+- [ ] **SETT-01**: JSON config file in project root stores all user preferences
+- [ ] **SETT-02**: CLI menu allows browsing and modifying settings interactively
+- [ ] **SETT-03**: Settings include: auto-backup toggle, default container type, default packages
+- [ ] **SETT-04**: Sensible defaults work out of the box with zero configuration
+
+### Backup & Data Safety
+
+- [ ] **BACK-01**: User can manually trigger full container backup via docker export
+- [ ] **BACK-02**: Optional auto-backup on instance startup (togglable via settings)
+- [ ] **BACK-03**: Backup captures both container filesystem and workspace volume data
+- [ ] **BACK-04**: User can restore an instance from a backup
+
+### MCP Integration
+
+- [ ] **MCP-01**: Sandbox instances automatically connect to host Docker MCP Toolkit server on startup
+- [ ] **MCP-02**: README includes instructions for setting up Docker Desktop MCP Toolkit on the host
+- [ ] **MCP-03**: MCP connection works without per-container MCP configuration
+
+### Code Quality
+
+- [ ] **QUAL-01**: Codebase restructured with clear separation of concerns (no monolithic scripts)
+- [ ] **QUAL-02**: Code follows Docker best practices (multi-stage builds, minimal layers, no root)
+- [ ] **QUAL-03**: Code follows Claude Code best practices for sandbox environments
+- [ ] **QUAL-04**: Consistent coding style and naming conventions across all scripts
+
+### Security
+
+- [ ] **SEC-01**: Hardcoded passwords removed from Dockerfiles (use passwordless sudo)
+- [ ] **SEC-02**: SSH bound to localhost only (not 0.0.0.0)
+- [ ] **SEC-03**: Docker capabilities dropped to minimum required set
+- [ ] **SEC-04**: Resource limits set on containers (memory, CPU)
+- [ ] **SEC-05**: Security risk analysis documented with mitigations
+- [ ] **SEC-06**: Appropriate disclaimers added to README
+
+### Documentation
+
+- [ ] **DOC-01**: README includes "Why I built this" section
+- [ ] **DOC-02**: README includes "Who is this for" section
+- [ ] **DOC-03**: README includes security disclaimers and risk acknowledgments
+
+### Bug Fixes
+
+- [ ] **BUG-01**: Rebuilt containers no longer pile up as orphaned instances in Docker
+- [ ] **BUG-02**: Manager detects and displays all existing container instances (including orphaned)
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Container Variants
+
+- **CONT-V2-01**: Windows 11 Docker container/sandbox support
+- **CONT-V2-02**: macOS Docker container/sandbox support
+
+### Package Management
+
+- **PKG-V2-01**: User can select which packages/frameworks come pre-installed per container
+- **PKG-V2-02**: Curated list of popular package "packs" (Python data science, web dev, etc.)
+
+### Templates
+
+- **TMPL-V2-01**: User can save container configuration as named template
+- **TMPL-V2-02**: User can create new instances from saved templates
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Kubernetes/cluster orchestration | Massively over-scoped; this tool targets single-machine Docker users |
+| VS Code Dev Container integration | Using Claude Code remote control instead |
+| Web-based IDE | Duplicates existing products, not aligned with CLI-first philosophy |
+| Per-container MCP server setup | Docker Desktop MCP Toolkit handles this at host level |
+| Cloud provider integration | This tool is for local Docker environments |
+| devcontainer.json compatibility | Would require implementing full Dev Container spec |
+| Docker Compose orchestration | Moved to build/run for instance isolation |
+| Automatic container scaling | Enterprise feature not needed for personal use |
+| Built-in code editor | Users bring their own terminal/editor |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| PLAT-01 | — | Pending |
+| PLAT-02 | — | Pending |
+| PLAT-03 | — | Pending |
+| PLAT-04 | — | Pending |
+| CONT-01 | — | Pending |
+| CONT-02 | — | Pending |
+| CONT-03 | — | Pending |
+| CONT-04 | — | Pending |
+| CONT-05 | — | Pending |
+| INST-01 | — | Pending |
+| INST-02 | — | Pending |
+| CRED-01 | — | Pending |
+| CRED-02 | — | Pending |
+| CRED-03 | — | Pending |
+| CRED-04 | — | Pending |
+| SETT-01 | — | Pending |
+| SETT-02 | — | Pending |
+| SETT-03 | — | Pending |
+| SETT-04 | — | Pending |
+| BACK-01 | — | Pending |
+| BACK-02 | — | Pending |
+| BACK-03 | — | Pending |
+| BACK-04 | — | Pending |
+| MCP-01 | — | Pending |
+| MCP-02 | — | Pending |
+| MCP-03 | — | Pending |
+| QUAL-01 | — | Pending |
+| QUAL-02 | — | Pending |
+| QUAL-03 | — | Pending |
+| QUAL-04 | — | Pending |
+| SEC-01 | — | Pending |
+| SEC-02 | — | Pending |
+| SEC-03 | — | Pending |
+| SEC-04 | — | Pending |
+| SEC-05 | — | Pending |
+| SEC-06 | — | Pending |
+| DOC-01 | — | Pending |
+| DOC-02 | — | Pending |
+| DOC-03 | — | Pending |
+| BUG-01 | — | Pending |
+| BUG-02 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 41 total
+- Mapped to phases: 0
+- Unmapped: 41 ⚠️
+
+---
+*Requirements defined: 2026-03-13*
+*Last updated: 2026-03-13 after initial definition*
