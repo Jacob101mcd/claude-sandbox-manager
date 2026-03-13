@@ -133,6 +133,45 @@ claude-sandbox/
 - **[GSD framework](https://github.com/glittercowboy/get-shit-done)** (`get-shit-done-cc`) — pre-installed globally for the `claude` user
 - **SSH server** with key-only authentication
 
+## Integrations
+
+### MCP Toolkit (Docker)
+
+Sandbox instances automatically connect to the host's Docker MCP Toolkit server on startup. Claude Code inside the container can use any MCP servers configured in Docker Desktop or via the `docker mcp` CLI plugin.
+
+**Prerequisites:**
+
+1. Install Docker Desktop with MCP Toolkit enabled (Settings > Features > MCP Toolkit), OR install the `docker mcp` CLI plugin on Linux Docker Engine
+2. Add at least one MCP server via the Docker Desktop MCP catalog or `docker mcp server add`
+3. If using the `docker mcp` CLI plugin on Linux: start the gateway manually:
+   ```
+   docker mcp gateway run --transport sse --port 8811
+   ```
+
+**How it works:** The manager passes MCP connection details to each container. On startup, the container probes the MCP Gateway at `host.docker.internal:8811` and configures Claude Code automatically. No per-container setup needed.
+
+**Verification:** After starting an instance, SSH in and run:
+```
+claude mcp list --scope user
+```
+Confirm the `docker-mcp` server is listed.
+
+**Port override:** To use a non-default gateway port, set `CSM_MCP_PORT=NNNN` in your `.env` file.
+
+**Disabling:** To disable MCP for a specific instance, the manager stores this preference per-instance in the registry.
+
+### Remote Control
+
+Optionally start a Claude Code remote control session inside the container, letting you continue conversations from a browser or mobile device.
+
+**Important:** **Remote control requires a claude.ai subscription (Pro, Max, Team, or Enterprise) and does not work with API keys alone.** You must run `/login` inside the container to authenticate with your claude.ai account before remote control will function.
+
+**Enabling:** When creating a new instance, the manager prompts `Enable remote control?`. Answer `y` to enable.
+
+**How it works:** When enabled, the container launches `claude remote-control` as a background process on startup. The session URL is logged to `/tmp/csm-remote-control.log` inside the container.
+
+See [Claude Code Remote Control](https://code.claude.com/docs/en/remote-control) for full documentation.
+
 ## Notes
 
 - **SSH keys are auto-generated** per instance on first build. Each instance gets unique keys.
