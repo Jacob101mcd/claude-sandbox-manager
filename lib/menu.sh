@@ -7,7 +7,8 @@
 # Provides: menu_show_header, menu_show_instances, menu_show_actions,
 #           menu_select_instance, menu_select_container_type,
 #           menu_action_start, menu_action_stop,
-#           menu_action_new, menu_action_remove, menu_main
+#           menu_action_new, menu_action_remove,
+#           menu_action_backup, menu_action_restore, menu_main
 
 # Guard: CSM_ROOT must be set by entry point
 [[ -n "${CSM_ROOT:-}" ]] || { echo "ERROR: CSM_ROOT not set. Run via bin/csm." >&2; exit 1; }
@@ -59,6 +60,8 @@ menu_show_actions() {
     echo "  [T] Stop an instance"
     echo "  [N] Create new instance"
     echo "  [R] Remove an instance"
+    echo "  [B] Backup an instance"
+    echo "  [E] Restore an instance"
     echo "  [Q] Quit"
 }
 
@@ -234,6 +237,55 @@ menu_action_remove() {
 }
 
 # ---------------------------------------------------------------------------
+# menu_action_backup -- Create a backup of an instance
+# ---------------------------------------------------------------------------
+menu_action_backup() {
+    local name
+    name="$(menu_select_instance "Select instance to back up:")" || return
+
+    backup_create "$name"
+}
+
+# ---------------------------------------------------------------------------
+# menu_action_restore -- Restore an instance from a selected backup
+# ---------------------------------------------------------------------------
+menu_action_restore() {
+    local name
+    name="$(menu_select_instance "Select instance to restore:")" || return
+
+    backup_list "$name" || return
+
+    local choice
+    read -rp "Select backup number: " choice
+
+    # Validate choice is a number in range
+    if ! [[ "$choice" =~ ^[0-9]+$ ]] || (( choice < 1 || choice > ${#_BACKUP_LISTED_DIRS[@]} )); then
+        msg_error "Invalid selection."
+        return
+    fi
+
+    local selected_dir="${_BACKUP_LISTED_DIRS[$((choice - 1))]}"
+
+    msg_warn "This will REPLACE the current instance with the selected backup."
+
+    local confirm
+    read -rp "Type YES to confirm restore: " confirm
+
+    if [[ "$confirm" != "YES" ]]; then
+        msg_warn "Cancelled."
+        return
+    fi
+
+    backup_restore "$name" "$selected_dir"
+
+    local answer
+    read -rp "SSH into instance now? (y/N) " answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+        exec ssh "$(common_ssh_alias "$name")"
+    fi
+}
+
+# ---------------------------------------------------------------------------
 # menu_main -- Main interactive loop (entry point for the menu)
 # ---------------------------------------------------------------------------
 menu_main() {
@@ -261,6 +313,8 @@ menu_main() {
             t) menu_action_stop ;;
             n) menu_action_new ;;
             r) menu_action_remove ;;
+            b) menu_action_backup ;;
+            e) menu_action_restore ;;
             q) exit 0 ;;
             *) msg_error "Invalid choice." ;;
         esac
