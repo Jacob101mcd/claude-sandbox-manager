@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation + Security** - Cross-platform entry point, modular code structure, bug fixes, and immediate security hardening of the existing codebase (completed 2026-03-13)
 - [ ] **Phase 2: Container Engine** - End-to-end container lifecycle (create/start/stop/ssh) on Linux and macOS with minimal CLI variant, credential injection, and Claude Code via native installer
 - [x] **Phase 3: Backup + Data Safety** - Full container backup and restore that correctly captures both container filesystem and workspace volume data, with optional auto-backup on startup (completed 2026-03-13)
-- [ ] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage
+- [x] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage (completed 2026-03-13)
 - [ ] **Phase 5: Integration Layer** - Docker Desktop MCP Toolkit auto-connection, Claude Code remote control option, and resource limit enforcement
 - [ ] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product
 
@@ -79,7 +79,7 @@ Plans:
   1. User can select "GUI" container type at creation time and have it build and start without additional steps
   2. User can open a browser and reach the container's desktop environment at a localhost URL
   3. A browser opened inside the container desktop renders web pages correctly (shared memory is sufficient — no crash on page load)
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 04-01-PLAN.md — Multi-stage Dockerfile (base/cli/gui) + entrypoint VNC startup
@@ -118,6 +118,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation + Security | 4/4 | Complete   | 2026-03-13 |
 | 2. Container Engine | 1/2 | In Progress|  |
 | 3. Backup + Data Safety | 2/2 | Complete   | 2026-03-13 |
-| 4. GUI Container Variant | 1/2 | In Progress|  |
+| 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 0/? | Not started | - |
 | 6. Settings + Documentation | 0/? | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01 GUI container Dockerfile and entrypoint
-last_updated: "2026-03-13T22:05:26.018Z"
+stopped_at: Completed 04-02 GUI container Bash module wiring
+last_updated: "2026-03-13T22:11:13.020Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
   percent: 92
 ---
 
@@ -58,6 +58,7 @@ Progress: [█████████░] 92%
 | Phase 03 P01 | 2m15s | 1 tasks | 2 files |
 | Phase 03 P02 | 2min | 2 tasks | 3 files |
 | Phase 04-gui-container-variant P01 | 1min | 2 tasks | 2 files |
+| Phase 04-gui-container-variant P02 | 7min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,7 @@ Recent decisions affecting current work:
 - [Phase 04-gui-container-variant]: GUI variant detected via 'command -v vncserver' — binary presence is authoritative, no env var needed
 - [Phase 04-gui-container-variant]: Multi-stage Dockerfile: base stage holds shared layers; cli/gui extend independently with their own EXPOSE and CMD
 - [Phase 04-gui-container-variant]: chromium-safe wrapper script provides --no-sandbox --disable-gpu --disable-dev-shm-usage for rootless container safety
+- [Phase 04-gui-container-variant]: vnc_port allocation mirrors ssh port pattern starting at 6080, type-suffixed image tags distinguish cli/gui builds
 
 ### Pending Todos
 
@@ -107,6 +109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:05:26.001Z
-Stopped at: Completed 04-01 GUI container Dockerfile and entrypoint
+Last session: 2026-03-13T22:11:13.006Z
+Stopped at: Completed 04-02 GUI container Bash module wiring
 Resume file: None
