@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **CONT-01**: User can build and run a minimal CLI container (lightweight, headless)
 - [ ] **CONT-02**: User can build and run a GUI container with desktop environment and browser
-- [ ] **CONT-03**: Instance manager presents container type selection when creating new instances
+- [x] **CONT-03**: Instance manager presents container type selection when creating new instances
 - [ ] **CONT-04**: GUI container runs Xvfb + noVNC for browser-based desktop access
 - [ ] **CONT-05**: GUI containers start with adequate shared memory (--shm-size=512m minimum)
 
@@ -133,7 +133,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | BUG-01 | Phase 1 | Complete |
 | BUG-02 | Phase 1 | Complete |
 | CONT-01 | Phase 2 | Complete |
-| CONT-03 | Phase 2 | Pending |
+| CONT-03 | Phase 2 | Complete |
 | INST-01 | Phase 2 | Complete |
 | CRED-01 | Phase 2 | Complete |
 | CRED-02 | Phase 2 | Complete |

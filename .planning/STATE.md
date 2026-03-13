@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 02-01 Credentials + Dockerfile
-last_updated: "2026-03-13T18:49:14Z"
-last_activity: 2026-03-13 — Completed 02-01 Credentials + Dockerfile
+stopped_at: Completed 02-02 Container Engine Integration
+last_updated: "2026-03-13T18:54:23Z"
+last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 92
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 2 of 6 (Container Engine)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-03-13 — Completed 02-01 Credentials + Dockerfile
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 
-Progress: [████████░░] 83%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 2.4min
-- Total execution time: 0.20 hours
+- Total plans completed: 6
+- Average duration: 2.5min
+- Total execution time: 0.25 hours
 
 **By Phase:**
 
@@ -48,9 +48,10 @@ Progress: [████████░░] 83%
 | Phase 01 P03 | 2min | 2 tasks | 4 files |
 | Phase 01 P04 | 3min | 2 tasks | 2 files |
 | Phase 02 P01 | 2min | 2 tasks | 4 files |
+| Phase 02 P02 | 3min | 2 tasks | 8 files |
 
 **Recent Trend:**
-- Last 5 plans: 2min, 3min, 2min, 3min, 2min
+- Last 5 plans: 3min, 2min, 3min, 2min, 3min
 - Trend: Steady
 
 *Updated after each plan completion*
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 - [Phase 02 P01]: Native installer via curl pipe bash replaces NPM global install for Claude Code
 - [Phase 02 P01]: Credentials never in image layers -- runtime injection only via docker -e flags
 - [Phase 02 P01]: msg_warn for missing credentials -- non-blocking warnings, not fatal errors
+- [Phase 02 P02]: Container type menu shown even with only CLI available -- consistent UX per locked decision
+- [Phase 02 P02]: instances_add called in menu before docker_start_instance -- type registered early
+- [Phase 02 P02]: test_helper.bash adds ~/.local/bin to PATH for jq in BATS tests
 
 ### Pending Todos
 
@@ -93,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T18:49:14Z
-Stopped at: Completed 02-01 Credentials + Dockerfile
-Resume file: .planning/phases/02-container-engine/02-01-SUMMARY.md
+Last session: 2026-03-13T18:54:23Z
+Stopped at: Completed 02-02 Container Engine Integration
+Resume file: .planning/phases/02-container-engine/02-02-SUMMARY.md
