@@ -5,7 +5,8 @@
 # Provides the user-facing CLI experience matching the PowerShell manager UX.
 #
 # Provides: menu_show_header, menu_show_instances, menu_show_actions,
-#           menu_select_instance, menu_action_start, menu_action_stop,
+#           menu_select_instance, menu_select_container_type,
+#           menu_action_start, menu_action_stop,
 #           menu_action_new, menu_action_remove, menu_main
 
 # Guard: CSM_ROOT must be set by entry point
@@ -110,6 +111,25 @@ menu_select_instance() {
 }
 
 # ---------------------------------------------------------------------------
+# menu_select_container_type -- Prompt user to choose a container type
+# Returns: type string on stdout (currently always "cli")
+# ---------------------------------------------------------------------------
+menu_select_container_type() {
+    echo ""
+    echo "Select container type:"
+    echo "  [1] Minimal CLI"
+    echo "  [2] GUI Desktop (coming soon)"
+    echo ""
+    local choice
+    read -rp "Type [1]: " choice
+    case "${choice:-1}" in
+        1) echo "cli" ;;
+        2) msg_warn "GUI Desktop not yet available. Using Minimal CLI."; echo "cli" ;;
+        *) msg_error "Invalid selection. Using Minimal CLI."; echo "cli" ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
 # menu_action_start -- Start an instance and optionally SSH in
 # ---------------------------------------------------------------------------
 menu_action_start() {
@@ -159,6 +179,13 @@ menu_action_new() {
         msg_error "Instance '$name' already exists."
         return
     fi
+
+    # Select container type
+    local container_type
+    container_type="$(menu_select_container_type)"
+
+    # Register instance with type (docker_start_instance will find the port)
+    instances_add "$name" "$container_type"
 
     docker_start_instance "$name"
 
@@ -216,6 +243,7 @@ menu_main() {
 
     if [[ -z "$registered_names" ]]; then
         msg_warn "No instances found. Creating 'default' instance..."
+        instances_add "default" "cli"
         docker_start_instance "default"
     fi
 
