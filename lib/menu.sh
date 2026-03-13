@@ -121,13 +121,13 @@ menu_select_container_type() {
     echo ""
     echo "Select container type:"
     echo "  [1] Minimal CLI"
-    echo "  [2] GUI Desktop (coming soon)"
+    echo "  [2] GUI Desktop"
     echo ""
     local choice
     read -rp "Type [1]: " choice
     case "${choice:-1}" in
         1) echo "cli" ;;
-        2) msg_warn "GUI Desktop not yet available. Using Minimal CLI."; echo "cli" ;;
+        2) echo "gui" ;;
         *) msg_error "Invalid selection. Using Minimal CLI."; echo "cli" ;;
     esac
 }
@@ -141,10 +141,26 @@ menu_action_start() {
 
     docker_start_instance "$name"
 
-    local answer
-    read -rp "SSH into instance now? (y/N) " answer
-    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
-        exec ssh "$(common_ssh_alias "$name")"
+    local type
+    type="$(instances_get_type "$name")"
+
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        msg_ok "noVNC desktop: http://localhost:${vnc_port}"
+        local answer
+        read -rp "Open in browser? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            xdg-open "http://localhost:${vnc_port}" 2>/dev/null || \
+            open "http://localhost:${vnc_port}" 2>/dev/null || \
+            true
+        fi
+    else
+        local answer
+        read -rp "SSH into instance now? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            exec ssh "$(common_ssh_alias "$name")"
+        fi
     fi
 }
 
@@ -192,10 +208,23 @@ menu_action_new() {
 
     docker_start_instance "$name"
 
-    local answer
-    read -rp "SSH into instance now? (y/N) " answer
-    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
-        exec ssh "$(common_ssh_alias "$name")"
+    if [[ "$container_type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        msg_ok "noVNC desktop: http://localhost:${vnc_port}"
+        local answer
+        read -rp "Open in browser? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            xdg-open "http://localhost:${vnc_port}" 2>/dev/null || \
+            open "http://localhost:${vnc_port}" 2>/dev/null || \
+            true
+        fi
+    else
+        local answer
+        read -rp "SSH into instance now? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            exec ssh "$(common_ssh_alias "$name")"
+        fi
     fi
 }
 
