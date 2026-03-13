@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:24.04 AS base
 
 # System packages (rarely change -- maximize cache)
 RUN apt-get update && apt-get install -y \
@@ -59,8 +59,55 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/claude/.bashrc \
 RUN npx -y get-shit-done-cc@latest --global
 USER root
 
+# ──────────────────────────────────────────────
+# CLI stage: minimal -- just entrypoint + SSH
+# ──────────────────────────────────────────────
+FROM base AS cli
+
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 22
+CMD ["/usr/local/bin/entrypoint.sh"]
+
+# ──────────────────────────────────────────────
+# GUI stage: full desktop (Xfce + VNC + Chromium)
+# ──────────────────────────────────────────────
+FROM base AS gui
+
+# Install desktop environment and VNC stack
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xfce4 \
+    xfce4-terminal \
+    tigervnc-standalone-server \
+    novnc \
+    python3-websockify \
+    python3-numpy \
+    dbus-x11 \
+    chromium-browser \
+    && rm -rf /var/lib/apt/lists/*
+
+# Chromium wrapper: container-safe launch flags
+RUN printf '#!/bin/sh\nexec chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --homepage=about:blank "$@"\n' \
+    > /usr/local/bin/chromium-safe \
+    && chmod +x /usr/local/bin/chromium-safe
+
+# Xfce desktop configuration for claude user
+RUN mkdir -p /home/claude/Desktop
+
+# Workspace desktop shortcut: folder icon pointing to /home/claude/workspace
+RUN printf '[Desktop Entry]\nVersion=1.0\nType=Application\nName=Workspace\nComment=Open workspace folder\nExec=thunar /home/claude/workspace\nIcon=folder\nTerminal=false\nCategories=Utility;\n' \
+    > /home/claude/Desktop/workspace.desktop \
+    && chmod +x /home/claude/Desktop/workspace.desktop \
+    && chown -R claude:claude /home/claude/Desktop
+
+# Disable screensaver and power manager autostart (not needed in a container)
+RUN rm -f /etc/xdg/autostart/xfce4-screensaver.desktop \
+          /etc/xdg/autostart/xfce4-power-manager.desktop \
+    || true
+
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 22 6080
 CMD ["/usr/local/bin/entrypoint.sh"]
