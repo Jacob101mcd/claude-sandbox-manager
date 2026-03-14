@@ -1,140 +1,59 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
+milestone_name: MVP
 status: completed
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-03-14T18:59:10.179Z"
-last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
+stopped_at: Milestone v1.0 archived
+last_updated: "2026-03-14T20:15:00.000Z"
+last_activity: 2026-03-14 — Milestone v1.0 completed and archived
 progress:
   total_phases: 8
   completed_phases: 8
   total_plans: 17
   completed_plans: 17
-  percent: 92
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Safe, hands-free Claude Code sandboxes that anyone can spin up without Docker expertise
-**Current focus:** Phase 2 — Container Engine
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 2 of 6 (Container Engine)
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-03-13 — Completed 02-02 Container Engine Integration
+Milestone: v1.0 MVP — SHIPPED 2026-03-14
+All 8 phases complete, 17 plans executed, 41/41 requirements satisfied.
 
-Progress: [█████████░] 92%
+Next: `/gsd:new-milestone` to define v1.1 or v2.0
 
 ## Performance Metrics
 
-**Velocity:**
-- Total plans completed: 6
-- Average duration: 2.5min
-- Total execution time: 0.25 hours
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| Phase 01 P01 | 2min | 2 tasks | 6 files |
-| Phase 01 P02 | 3min | 2 tasks | 6 files |
-| Phase 01 P03 | 2min | 2 tasks | 4 files |
-| Phase 01 P04 | 3min | 2 tasks | 2 files |
-| Phase 02 P01 | 2min | 2 tasks | 4 files |
-| Phase 02 P02 | 3min | 2 tasks | 8 files |
-
-**Recent Trend:**
-- Last 5 plans: 3min, 2min, 3min, 2min, 3min
-- Trend: Steady
-
-*Updated after each plan completion*
-| Phase 03 P01 | 2m15s | 1 tasks | 2 files |
-| Phase 03 P02 | 2min | 2 tasks | 3 files |
-| Phase 04-gui-container-variant P01 | 1min | 2 tasks | 2 files |
-| Phase 04-gui-container-variant P02 | 7min | 2 tasks | 7 files |
-| Phase 05-integration-layer P01 | 4min | 2 tasks | 7 files |
-| Phase 05-integration-layer P02 | 2min | 2 tasks | 2 files |
-| Phase 06 P02 | 2min | 2 tasks | 2 files |
-| Phase 06-settings-documentation P01 | 3m29s | 2 tasks | 9 files |
-| Phase 06 P03 | 1m26s | 1 tasks | 1 files |
-| Phase 07-backup-restore-integration P01 | 4min | 2 tasks | 5 files |
-| Phase 08-default-container-type P01 | 7min | 2 tasks | 4 files |
+**v1.0 Summary:**
+- 8 phases, 17 plans, 140 commits
+- 3 days (Mar 12-14, 2026)
+- 1,933 lines Bash, 2,327 lines BATS tests
+- 169 BATS tests passing
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- [Pre-planning]: Linux support first — Claude can self-test in its Linux environment
-- [Pre-planning]: Native installer for Claude Code — more reliable than NPM installation
-- [Pre-planning]: Docker export for backups — captures full container state, simplest approach
-- [Pre-planning]: Config file + CLI menu for settings — config file as source of truth, CLI for convenience
-- [Research]: Stack choice (Bash vs TypeScript) unresolved — existing PROJECT.md Bash/PowerShell approach suggests Bash is acceptable; resolve during Phase 1 planning
-- [Phase 01]: Installed BATS locally and ShellCheck via npm due to no sudo access
-- [Phase 01 P02]: Library files do not set -euo pipefail; entry point owns that
-- [Phase 01 P02]: Atomic jq writes via tmp file + mv to prevent registry corruption
-- [Phase 01 P02]: Color output auto-disabled when stdout is not a terminal
-- [Phase 01 P03]: Docker run command built as Bash array for safe argument handling
-- [Phase 01 P03]: SSH config blocks parsed line-by-line for clean removal/replacement
-- [Phase 01 P03]: Build staging dir cleaned and recreated each build for deterministic state
-- [Phase 01 P04]: Auto-create default instance when none exist, matching PowerShell behavior
-- [Phase 01 P04]: Menu actions are case-insensitive single-character dispatch (S/T/N/R/Q)
-- [Phase 01 P04]: bin/csm sources all modules then runs startup checks before menu_main
-- [Phase 02 P01]: Native installer via curl pipe bash replaces NPM global install for Claude Code
-- [Phase 02 P01]: Credentials never in image layers -- runtime injection only via docker -e flags
-- [Phase 02 P01]: msg_warn for missing credentials -- non-blocking warnings, not fatal errors
-- [Phase 02 P02]: Container type menu shown even with only CLI available -- consistent UX per locked decision
-- [Phase 02 P02]: instances_add called in menu before docker_start_instance -- type registered early
-- [Phase 02 P02]: test_helper.bash adds ~/.local/bin to PATH for jq in BATS tests
-- [Phase 03]: Duplicate docker run flags from docker_run_instance into backup_restore with sync comment to avoid tight coupling while keeping security hardening
-- [Phase 03]: _BACKUP_LISTED_DIRS global array populated by backup_list for caller use in selection menus
-- [Phase 03]: Auto-backup reads CSM_AUTO_BACKUP via credentials_load; silently skips when container status is not created
-- [Phase 03]: backup.sh sourced after docker.sh and before menu.sh: backup depends on docker functions, menu calls backup functions
-- [Phase 04-gui-container-variant]: GUI variant detected via 'command -v vncserver' — binary presence is authoritative, no env var needed
-- [Phase 04-gui-container-variant]: Multi-stage Dockerfile: base stage holds shared layers; cli/gui extend independently with their own EXPOSE and CMD
-- [Phase 04-gui-container-variant]: chromium-safe wrapper script provides --no-sandbox --disable-gpu --disable-dev-shm-usage for rootless container safety
-- [Phase 04-gui-container-variant]: vnc_port allocation mirrors ssh port pattern starting at 6080, type-suffixed image tags distinguish cli/gui builds
-- [Phase 05-integration-layer]: jq has() used instead of // for boolean fields to avoid false being treated as absent
-- [Phase 05-integration-layer]: credentials_get_docker_env_flags takes optional instance name; backward compat when omitted
-- [Phase 05-integration-layer]: Remote control prompt in menu_action_new defaults to N per locked decision
-- [Phase 05-02]: curl probes gateway with HEAD first, falls back to GET to handle both HTTP and SSE endpoints
-- [Phase 05-02]: Underscore-prefixed vars in entrypoint.sh avoid namespace pollution at top-level script scope
-- [Phase 06-02]: Apache 2.0 license attributed to Claude Sandbox Manager Contributors
-- [Phase 06-02]: 8 risks documented in SECURITY.md including SSH, volume mounts, and image supply chain beyond the 5 required
-- [Phase 06-02]: No formal responsible disclosure process -- GitHub issues sufficient for project scale
-- [Phase 06-01]: settings_get_bool uses jq type() check instead of has() for nested paths — simpler and handles any nesting depth
-- [Phase 06-01]: settings.sh sourced before credentials.sh in bin/csm — credentials calls settings_get for mcp_port
-- [Phase 06-01]: credentials_load removed from docker_start_instance auto-backup block — settings_get_bool reads config directly without needing env vars
-- [Phase 06]: Linux/macOS documented first with bin/csm as primary; Windows second with claude-manager.bat
-- [Phase 06]: Security section uses 5-row emoji risk table linking to full SECURITY.md analysis
-- [Phase 07-backup-restore-integration]: _docker_build_run_cmd populates global _DOCKER_RUN_CMD array -- consistent with CSM_DOCKER_ENV_FLAGS pattern, eliminates docker run command duplication between create and restore
-- [Phase 07-backup-restore-integration]: backup_restore calls ssh_write_config after container start -- mirrors docker_start_instance orchestration, SSH alias works immediately after restore
-- [Phase 07-backup-restore-integration]: menu_action_restore type-aware UX copies menu_action_start pattern exactly -- consistent user experience for GUI (browser) and CLI (SSH) after restore
-- [Phase 08-default-container-type]: defaults.container_type factory default changed from 'cli' string to JSON null — distinguishes 'user has not chosen' from explicit selection
-- [Phase 08-default-container-type]: Auto-skip message written to stderr only — command substitution captures only the type string
-- [Phase 08-default-container-type]: Cycle has no path back to null — once set, user cycles through cli/gui only in Preferences
+Decisions logged in PROJECT.md Key Decisions table (10 entries, all ✓ Good).
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- [Research]: Node.js vs Bash scripting language is unresolved — must be decided before Phase 1 plan is written
-- [Research]: Claude Code native installer URL stability unknown — pin version or add NPM fallback; validate before Phase 2
-- [Research]: MCP Toolkit behavior on Linux Docker Engine (without Docker Desktop) is poorly documented — needs hands-on validation before Phase 5
+None active. Previous research blockers resolved during v1.0 execution.
 
 ## Session Continuity
 
-Last session: 2026-03-14T18:56:28.350Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-03-14
+Stopped at: Milestone v1.0 archived
 Resume file: None
