@@ -141,19 +141,19 @@ Deferred to future release. Tracked but not in current roadmap.
 | CRED-04 | Phase 2 | Complete |
 | BACK-01 | Phase 3 | Complete |
 | BACK-02 | Phase 3 | Complete |
-| BACK-03 | Phase 3 | Complete |
-| BACK-04 | Phase 3 | Complete |
+| BACK-03 | Phase 3, Phase 7 | Pending |
+| BACK-04 | Phase 3, Phase 7 | Pending |
 | CONT-02 | Phase 4 | Complete |
 | CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 4 | Complete |
-| MCP-01 | Phase 5 | Complete |
+| MCP-01 | Phase 5, Phase 7 | Pending |
 | MCP-02 | Phase 5 | Complete |
 | MCP-03 | Phase 5 | Complete |
-| INST-02 | Phase 5 | Complete |
-| SETT-01 | Phase 6 | Complete |
+| INST-02 | Phase 5, Phase 7 | Pending |
+| SETT-01 | Phase 6, Phase 8 | Pending |
 | SETT-02 | Phase 6 | Complete |
 | SETT-03 | Phase 6 | Complete |
-| SETT-04 | Phase 6 | Complete |
+| SETT-04 | Phase 6, Phase 8 | Pending |
 | SEC-05 | Phase 6 | Complete |
 | SEC-06 | Phase 6 | Complete |
 | DOC-01 | Phase 6 | Complete |
@@ -164,7 +164,8 @@ Deferred to future release. Tracked but not in current roadmap.
 - v1 requirements: 41 total
 - Mapped to phases: 41
 - Unmapped: 0 ✓
+- Pending (gap closure): 6 (BACK-03, BACK-04, MCP-01, INST-02, SETT-01, SETT-04)
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 — traceability mapped after roadmap creation*
+*Last updated: 2026-03-14 — gap closure phases 7-8 added from milestone audit*

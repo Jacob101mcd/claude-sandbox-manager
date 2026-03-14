@@ -18,6 +18,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage (completed 2026-03-13)
 - [ ] **Phase 5: Integration Layer** - Docker Desktop MCP Toolkit auto-connection, Claude Code remote control option, and resource limit enforcement
 - [x] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product (completed 2026-03-14)
+- [ ] **Phase 7: Fix Backup Restore Integration** - Pass instance name to credential flags on restore, call ssh_write_config after restore, fix "Restore → SSH with MCP/RC" flow
+- [ ] **Phase 8: Wire Default Container Type** - menu_select_container_type reads defaults.container_type from config, fix "Preferences → Effect" flow
 
 ## Phase Details
 
@@ -117,10 +119,22 @@ Plans:
 - [ ] 06-02-PLAN.md — SECURITY.md risk analysis + LICENSE file
 - [ ] 06-03-PLAN.md — README.md complete rewrite (cross-platform, narrative, security summary)
 
+### Phase 7: Fix Backup Restore Integration
+**Goal:** Restored containers receive the same MCP/RC environment flags and SSH alias as freshly created ones, fixing the "Restore → SSH with MCP/RC" end-to-end flow
+**Depends on**: Phase 3, Phase 5
+**Requirements**: BACK-03, BACK-04, MCP-01, INST-02
+**Gap Closure:** Closes INT-01, INT-02, Flow "Restore → SSH with MCP/RC" from audit
+
+### Phase 8: Wire Default Container Type
+**Goal:** The `defaults.container_type` setting from user preferences is applied when creating new instances, fixing the "Preferences → Effect" end-to-end flow
+**Depends on**: Phase 6
+**Requirements**: SETT-01, SETT-04
+**Gap Closure:** Closes INT-03, Flow "Preferences → Effect (default container type)" from audit
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -130,3 +144,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 1/2 | In Progress|  |
 | 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
+| 7. Fix Backup Restore Integration | 0/0 | Pending |  |
+| 8. Wire Default Container Type | 0/0 | Pending |  |
