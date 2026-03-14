@@ -110,7 +110,7 @@ Plans:
   3. The README explains "Why I built this" and "Who is this for" in plain language
   4. The README contains a security risk summary and appropriate disclaimers about running AI agents in containers
   5. A documented security risk analysis (with mitigations) exists and is referenced from the README
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 06-01-PLAN.md — Settings module (lib/settings.sh) + config integration + name validation + BATS tests
@@ -129,4 +129,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Backup + Data Safety | 2/2 | Complete   | 2026-03-13 |
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 1/2 | In Progress|  |
-| 6. Settings + Documentation | 0/3 | Not started | - |
+| 6. Settings + Documentation | 1/3 | In Progress|  |

@@ -67,7 +67,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-02**: SSH bound to localhost only (not 0.0.0.0)
 - [x] **SEC-03**: Docker capabilities dropped to minimum required set
 - [x] **SEC-04**: Resource limits set on containers (memory, CPU)
-- [ ] **SEC-05**: Security risk analysis documented with mitigations
+- [x] **SEC-05**: Security risk analysis documented with mitigations
 - [ ] **SEC-06**: Appropriate disclaimers added to README
 
 ### Documentation
@@ -154,7 +154,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | SETT-02 | Phase 6 | Pending |
 | SETT-03 | Phase 6 | Pending |
 | SETT-04 | Phase 6 | Pending |
-| SEC-05 | Phase 6 | Pending |
+| SEC-05 | Phase 6 | Complete |
 | SEC-06 | Phase 6 | Pending |
 | DOC-01 | Phase 6 | Pending |
 | DOC-02 | Phase 6 | Pending |
