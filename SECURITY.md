@@ -26,13 +26,12 @@ The goal is honest, practical disclosure — not alarming you, but not hiding an
 Containers are sandboxed but not VMs. Kernel-level exploits could theoretically cross container boundaries. CSM mitigates this by dropping unnecessary Linux capabilities at container start:
 
 - `MKNOD` — prevents creating device files
-- `AUDIT_WRITE` — prevents writing to audit log (reduces attack surface)
 - `SETFCAP` — prevents setting file capabilities
 - `SETPCAP` — prevents changing process capabilities
 - `NET_BIND_SERVICE` — prevents binding to privileged ports
 - `FSETID` — prevents setuid/setgid on file creation
 
-> **Note:** `SYS_CHROOT` is intentionally *not* dropped — OpenSSH's privilege separation requires `chroot()` to sandbox its pre-authentication child process. Dropping it breaks all SSH connections.
+> **Note:** `SYS_CHROOT` and `AUDIT_WRITE` are intentionally *not* dropped — OpenSSH requires both for privilege separation (`chroot`) and PTY allocation (audit logging). Dropping either breaks SSH connections.
 
 `--no-new-privileges` is also set, preventing privilege escalation via setuid binaries inside the container.
 
@@ -105,7 +104,7 @@ The security boundary differs depending on your Docker installation:
 
 ## What We Do
 
-- Drop 6 Linux capabilities on every container
+- Drop 5 Linux capabilities on every container
 - Set `--no-new-privileges` to prevent privilege escalation
 - Enforce configurable memory and CPU limits
 - SSH bound to `127.0.0.1` only (no external exposure)

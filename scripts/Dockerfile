@@ -31,7 +31,8 @@ RUN useradd -m -s /bin/bash claude \
 
 # SSH setup -- key-only (no password ever)
 RUN mkdir /var/run/sshd \
-    && printf '\nPermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nPubkeyAuthentication yes\nAuthorizedKeysFile .ssh/authorized_keys\nHostKey /etc/ssh/ssh_host_ed25519_key\n' >> /etc/ssh/sshd_config
+    && printf '\nPermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\nPubkeyAuthentication yes\nAuthorizedKeysFile .ssh/authorized_keys\nHostKey /etc/ssh/ssh_host_ed25519_key\n' >> /etc/ssh/sshd_config \
+    && sed -i 's/session.*required.*pam_loginuid.so/session optional pam_loginuid.so/' /etc/pam.d/sshd
 
 # Stable SSH host key -- baked in so the fingerprint never changes across rebuilds
 COPY _build_ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
