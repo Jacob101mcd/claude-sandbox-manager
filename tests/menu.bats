@@ -95,3 +95,53 @@ teardown() {
     last_line="$(echo "$result" | tail -1)"
     [[ "$last_line" == "cli" ]]
 }
+
+# ---------------------------------------------------------------------------
+# PLAT-02: Interactive menu dispatch functions exist in lib/menu.sh
+# ---------------------------------------------------------------------------
+
+@test "menu_main function is defined after sourcing menu.sh" {
+    declare -f menu_main > /dev/null
+}
+
+@test "menu_show_header function is defined after sourcing menu.sh" {
+    declare -f menu_show_header > /dev/null
+}
+
+@test "menu_show_actions function is defined after sourcing menu.sh" {
+    declare -f menu_show_actions > /dev/null
+}
+
+@test "menu_show_actions output contains S T N R Q dispatch keys" {
+    output="$(menu_show_actions)"
+    [[ "$output" == *"[S]"* ]]
+    [[ "$output" == *"[T]"* ]]
+    [[ "$output" == *"[N]"* ]]
+    [[ "$output" == *"[R]"* ]]
+    [[ "$output" == *"[Q]"* ]]
+}
+
+@test "menu_show_header output contains Claude Sandbox Manager banner" {
+    output="$(menu_show_header)"
+    [[ "$output" == *"Claude Sandbox Manager"* ]]
+}
+
+@test "menu_main dispatches Q to exit" {
+    grep -q 'q) exit 0' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu_main dispatches s to start action" {
+    grep -q 's) menu_action_start' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu_main dispatches t to stop action" {
+    grep -q 't) menu_action_stop' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu_main dispatches n to new action" {
+    grep -q 'n) menu_action_new' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu_main dispatches r to remove action" {
+    grep -q 'r) menu_action_remove' "$REAL_CSM_ROOT/lib/menu.sh"
+}
