@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: MVP
 status: completed
 stopped_at: Milestone v1.0 archived
-last_updated: "2026-03-14T20:15:00.000Z"
-last_activity: 2026-03-14 — Milestone v1.0 completed and archived
+last_updated: "2026-03-14T20:34:40Z"
+last_activity: 2026-03-14 — Quick task 1 completed (PowerShell feature parity: backup/restore, preferences, container type, security hardening)
 progress:
   total_phases: 8
   completed_phases: 8
@@ -52,8 +52,14 @@ None.
 
 None active. Previous research blockers resolved during v1.0 execution.
 
+## Quick Tasks
+
+| Task | Description | Status | Date |
+|------|-------------|--------|------|
+| quick-1 | PowerShell feature parity (backup/restore, preferences, container type, security hardening) | Done | 2026-03-14 |
+
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Milestone v1.0 archived
+Stopped at: Completed quick-1 (add-missing-menu-options-preferences-and)
 Resume file: None
