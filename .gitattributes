@@ -1,0 +1,2 @@
+# Force LF for files that run inside Linux containers
+*.sh text eol=lf
