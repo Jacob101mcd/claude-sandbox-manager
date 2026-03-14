@@ -134,6 +134,10 @@ Plans:
 **Depends on**: Phase 6
 **Requirements**: SETT-01, SETT-04
 **Gap Closure:** Closes INT-03, Flow "Preferences → Effect (default container type)" from audit
+**Plans:** 1 plan
+
+Plans:
+- [ ] 08-01-PLAN.md — Null factory default, auto-skip in menu, null-aware cycle + display labels
 
 ## Progress
 
@@ -149,4 +153,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Integration Layer | 1/2 | In Progress|  |
 | 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
 | 7. Fix Backup Restore Integration | 1/1 | Complete   | 2026-03-14 |
-| 8. Wire Default Container Type | 0/0 | Pending |  |
+| 8. Wire Default Container Type | 0/1 | Planned |  |
