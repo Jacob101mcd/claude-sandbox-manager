@@ -36,10 +36,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Settings Management
 
-- [ ] **SETT-01**: JSON config file in project root stores all user preferences
-- [ ] **SETT-02**: CLI menu allows browsing and modifying settings interactively
-- [ ] **SETT-03**: Settings include: auto-backup toggle, default container type, default packages
-- [ ] **SETT-04**: Sensible defaults work out of the box with zero configuration
+- [x] **SETT-01**: JSON config file in project root stores all user preferences
+- [x] **SETT-02**: CLI menu allows browsing and modifying settings interactively
+- [x] **SETT-03**: Settings include: auto-backup toggle, default container type, default packages
+- [x] **SETT-04**: Sensible defaults work out of the box with zero configuration
 
 ### Backup & Data Safety
 
@@ -150,10 +150,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | MCP-02 | Phase 5 | Complete |
 | MCP-03 | Phase 5 | Complete |
 | INST-02 | Phase 5 | Complete |
-| SETT-01 | Phase 6 | Pending |
-| SETT-02 | Phase 6 | Pending |
-| SETT-03 | Phase 6 | Pending |
-| SETT-04 | Phase 6 | Pending |
+| SETT-01 | Phase 6 | Complete |
+| SETT-02 | Phase 6 | Complete |
+| SETT-03 | Phase 6 | Complete |
+| SETT-04 | Phase 6 | Complete |
 | SEC-05 | Phase 6 | Complete |
 | SEC-06 | Phase 6 | Pending |
 | DOC-01 | Phase 6 | Pending |

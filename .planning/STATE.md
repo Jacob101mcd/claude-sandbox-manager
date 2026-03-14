@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-03-14T17:05:52.035Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-14T17:07:58.743Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
   percent: 92
 ---
 
@@ -62,6 +62,7 @@ Progress: [█████████░] 92%
 | Phase 05-integration-layer P01 | 4min | 2 tasks | 7 files |
 | Phase 05-integration-layer P02 | 2min | 2 tasks | 2 files |
 | Phase 06 P02 | 2min | 2 tasks | 2 files |
+| Phase 06-settings-documentation P01 | 3m29s | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,9 @@ Recent decisions affecting current work:
 - [Phase 06-02]: Apache 2.0 license attributed to Claude Sandbox Manager Contributors
 - [Phase 06-02]: 8 risks documented in SECURITY.md including SSH, volume mounts, and image supply chain beyond the 5 required
 - [Phase 06-02]: No formal responsible disclosure process -- GitHub issues sufficient for project scale
+- [Phase 06-01]: settings_get_bool uses jq type() check instead of has() for nested paths — simpler and handles any nesting depth
+- [Phase 06-01]: settings.sh sourced before credentials.sh in bin/csm — credentials calls settings_get for mcp_port
+- [Phase 06-01]: credentials_load removed from docker_start_instance auto-backup block — settings_get_bool reads config directly without needing env vars
 
 ### Pending Todos
 
@@ -120,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:05:52.017Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-14T17:07:58.724Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
