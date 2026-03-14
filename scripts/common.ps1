@@ -78,6 +78,28 @@ function Resolve-Port($Name, $Port) {
     return $newPort
 }
 
+function Resolve-VncPort($Name, $Port) {
+    if (-not $Port) { return $null }
+    if (Test-PortAvailable $Port) { return $Port }
+
+    Write-Host "`n[!] VNC port $Port is already in use on this machine." -ForegroundColor Yellow
+    $nextFree = Get-NextFreeVncPort
+    Write-Host "    Next available VNC port: $nextFree" -ForegroundColor Cyan
+    $choice = Read-Host "    Enter VNC port to use (or press Enter for $nextFree)"
+    if ([string]::IsNullOrWhiteSpace($choice)) {
+        $newPort = $nextFree
+    } else {
+        $newPort = [int]$choice
+    }
+
+    $instances = Get-Instances
+    $instances.PSObject.Properties[$Name].Value.vnc_port = $newPort
+    Save-Instances $instances
+
+    Write-Host "[OK] Instance '$Name' VNC reassigned to port $newPort" -ForegroundColor Green
+    return $newPort
+}
+
 # ===========================================================================
 # Path helpers
 # ===========================================================================
@@ -810,6 +832,12 @@ function Invoke-Restore($Name, $BackupDir) {
     $type      = if ($instProp -and $instProp.Value.PSObject.Properties["type"]) { $instProp.Value.type } else { "cli" }
     $vncPort   = if ($instProp -and $instProp.Value.PSObject.Properties["vnc_port"]) { $instProp.Value.vnc_port } else { $null }
 
+    # Check port availability before attempting docker run
+    $port = Resolve-Port $Name $port
+    if ($type -eq "gui" -and $vncPort) {
+        $vncPort = Resolve-VncPort $Name $vncPort
+    }
+
     $memLimit = Get-Setting '.defaults.memory_limit'
     if (-not $memLimit) { $memLimit = "2g" }
     $cpuLimit = Get-Setting '.defaults.cpu_limit'
@@ -864,6 +892,9 @@ function Start-SandboxInstance($Name) {
 
     $type    = Get-InstanceType $Name
     $vncPort = Get-InstanceVncPort $Name
+    if ($type -eq "gui" -and $vncPort) {
+        $vncPort = Resolve-VncPort $Name $vncPort
+    }
 
     Ensure-SshKeys $Name
     Ensure-Workspace $Name
