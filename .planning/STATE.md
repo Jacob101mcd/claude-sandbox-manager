@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 7 context gathered
-last_updated: "2026-03-14T17:42:50.646Z"
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-03-14T18:08:10.975Z"
 last_activity: 2026-03-13 — Completed 02-02 Container Engine Integration
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 15
-  completed_plans: 15
+  completed_phases: 7
+  total_plans: 16
+  completed_plans: 16
   percent: 92
 ---
 
@@ -64,6 +64,7 @@ Progress: [█████████░] 92%
 | Phase 06 P02 | 2min | 2 tasks | 2 files |
 | Phase 06-settings-documentation P01 | 3m29s | 2 tasks | 9 files |
 | Phase 06 P03 | 1m26s | 1 tasks | 1 files |
+| Phase 07-backup-restore-integration P01 | 4min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [Phase 06-01]: credentials_load removed from docker_start_instance auto-backup block — settings_get_bool reads config directly without needing env vars
 - [Phase 06]: Linux/macOS documented first with bin/csm as primary; Windows second with claude-manager.bat
 - [Phase 06]: Security section uses 5-row emoji risk table linking to full SECURITY.md analysis
+- [Phase 07-backup-restore-integration]: _docker_build_run_cmd populates global _DOCKER_RUN_CMD array -- consistent with CSM_DOCKER_ENV_FLAGS pattern, eliminates docker run command duplication between create and restore
+- [Phase 07-backup-restore-integration]: backup_restore calls ssh_write_config after container start -- mirrors docker_start_instance orchestration, SSH alias works immediately after restore
+- [Phase 07-backup-restore-integration]: menu_action_restore type-aware UX copies menu_action_start pattern exactly -- consistent user experience for GUI (browser) and CLI (SSH) after restore
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:42:50.620Z
-Stopped at: Phase 7 context gathered
-Resume file: .planning/phases/07-backup-restore-integration/07-CONTEXT.md
+Last session: 2026-03-14T18:08:10.949Z
+Stopped at: Completed 07-01-PLAN.md
+Resume file: None

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage (completed 2026-03-13)
 - [ ] **Phase 5: Integration Layer** - Docker Desktop MCP Toolkit auto-connection, Claude Code remote control option, and resource limit enforcement
 - [x] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product (completed 2026-03-14)
-- [ ] **Phase 7: Fix Backup Restore Integration** - Pass instance name to credential flags on restore, call ssh_write_config after restore, fix "Restore → SSH with MCP/RC" flow
+- [x] **Phase 7: Fix Backup Restore Integration** - Pass instance name to credential flags on restore, call ssh_write_config after restore, fix "Restore → SSH with MCP/RC" flow (completed 2026-03-14)
 - [ ] **Phase 8: Wire Default Container Type** - menu_select_container_type reads defaults.container_type from config, fix "Preferences → Effect" flow
 
 ## Phase Details
@@ -124,7 +124,7 @@ Plans:
 **Depends on**: Phase 3, Phase 5
 **Requirements**: BACK-03, BACK-04, MCP-01, INST-02
 **Gap Closure:** Closes INT-01, INT-02, Flow "Restore → SSH with MCP/RC" from audit
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] 07-01-PLAN.md — Extract shared docker run helper, fix backup_restore flags/SSH, type-aware restore UX
@@ -148,5 +148,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 1/2 | In Progress|  |
 | 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
-| 7. Fix Backup Restore Integration | 0/1 | Pending |  |
+| 7. Fix Backup Restore Integration | 1/1 | Complete   | 2026-03-14 |
 | 8. Wire Default Container Type | 0/0 | Pending |  |

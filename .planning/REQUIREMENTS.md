@@ -141,15 +141,15 @@ Deferred to future release. Tracked but not in current roadmap.
 | CRED-04 | Phase 2 | Complete |
 | BACK-01 | Phase 3 | Complete |
 | BACK-02 | Phase 3 | Complete |
-| BACK-03 | Phase 3, Phase 7 | Pending |
-| BACK-04 | Phase 3, Phase 7 | Pending |
+| BACK-03 | Phase 3, Phase 7 | Complete |
+| BACK-04 | Phase 3, Phase 7 | Complete |
 | CONT-02 | Phase 4 | Complete |
 | CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 4 | Complete |
-| MCP-01 | Phase 5, Phase 7 | Pending |
+| MCP-01 | Phase 5, Phase 7 | Complete |
 | MCP-02 | Phase 5 | Complete |
 | MCP-03 | Phase 5 | Complete |
-| INST-02 | Phase 5, Phase 7 | Pending |
+| INST-02 | Phase 5, Phase 7 | Complete |
 | SETT-01 | Phase 6, Phase 8 | Pending |
 | SETT-02 | Phase 6 | Complete |
 | SETT-03 | Phase 6 | Complete |
