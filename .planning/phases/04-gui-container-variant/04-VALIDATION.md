@@ -1,10 +1,11 @@
 ---
 phase: 4
 slug: gui-container-variant
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: validated
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-13
+validated: 2026-03-14
 ---
 
 # Phase 4 — Validation Strategy
@@ -38,18 +39,18 @@ created: 2026-03-13
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 1 | CONT-02 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ⬜ pending |
-| 04-01-02 | 01 | 1 | CONT-02 | unit (grep) | `bats tests/docker.bats` | ✅ | ⬜ pending |
-| 04-01-03 | 01 | 1 | CONT-02 | unit | `bats tests/menu.bats` | ✅ | ⬜ pending |
-| 04-01-04 | 01 | 1 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ⬜ pending |
-| 04-02-01 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ⬜ pending |
-| 04-02-02 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ⬜ pending |
-| 04-02-03 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ⬜ pending |
-| 04-02-04 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ⬜ pending |
-| 04-03-01 | 03 | 2 | CONT-05 | unit (grep) | `bats tests/docker.bats` | ✅ | ⬜ pending |
-| 04-03-02 | 03 | 2 | CONT-05 | unit (grep) | `bats tests/docker.bats` | ✅ | ⬜ pending |
-| 04-04-01 | 04 | 2 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ⬜ pending |
-| 04-04-02 | 04 | 2 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ⬜ pending |
+| 04-01-01 | 01 | 1 | CONT-02 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ✅ green |
+| 04-01-02 | 01 | 1 | CONT-02 | unit (grep) | `bats tests/docker.bats` | ✅ | ✅ green |
+| 04-01-03 | 01 | 1 | CONT-02 | unit | `bats tests/menu.bats` | ✅ | ✅ green |
+| 04-01-04 | 01 | 1 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ✅ green |
+| 04-02-01 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ✅ green |
+| 04-02-02 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ✅ green |
+| 04-02-03 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ✅ green |
+| 04-02-04 | 02 | 1 | CONT-04 | unit (grep) | `bats tests/dockerfile.bats` | ✅ | ✅ green |
+| 04-03-01 | 03 | 2 | CONT-05 | unit (grep) | `bats tests/docker.bats` | ✅ | ✅ green |
+| 04-03-02 | 03 | 2 | CONT-05 | unit (grep) | `bats tests/docker.bats` | ✅ | ✅ green |
+| 04-04-01 | 04 | 2 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ✅ green |
+| 04-04-02 | 04 | 2 | CONT-02 | unit | `bats tests/instances.bats` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -74,11 +75,20 @@ Existing BATS framework and test_helper.bash from Phases 1-3 cover all phase tes
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 5s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 5s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** validated 2026-03-14
+
+## Validation Audit 2026-03-14
+| Metric | Count |
+|--------|-------|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |
+| Total tests (phase-relevant) | 104 |
+| Tests passing | 104 |
