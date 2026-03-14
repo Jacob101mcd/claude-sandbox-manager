@@ -50,6 +50,69 @@ docker_build() {
 }
 
 # ---------------------------------------------------------------------------
+# _docker_build_run_cmd -- Build the full docker run command array
+# Args: $1 = instance name, $2 = SSH port, $3 = image tag
+# Populates: _DOCKER_RUN_CMD global array with full docker run command
+# ---------------------------------------------------------------------------
+_docker_build_run_cmd() {
+    local name="$1"
+    local port="$2"
+    local image_tag="$3"
+    local container_name
+    container_name="$(common_container_name "$name")"
+    local workspace_dir
+    workspace_dir="$(common_workspace_dir "$name")"
+
+    # Read instance type for type-aware configuration
+    local type
+    type="$(instances_get_type "$name")"
+
+    _DOCKER_RUN_CMD=(docker run -d)
+    _DOCKER_RUN_CMD+=(--name "$container_name")
+    _DOCKER_RUN_CMD+=(-p "127.0.0.1:${port}:22")                # SEC-02: bind SSH to localhost only
+    _DOCKER_RUN_CMD+=(-v "${workspace_dir}:/home/claude/workspace")
+    _DOCKER_RUN_CMD+=(-w /home/claude/workspace)
+    local mem_limit cpu_limit
+    mem_limit="$(settings_get '.defaults.memory_limit')"
+    cpu_limit="$(settings_get '.defaults.cpu_limit')"
+    _DOCKER_RUN_CMD+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from config)
+    _DOCKER_RUN_CMD+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
+    _DOCKER_RUN_CMD+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
+    _DOCKER_RUN_CMD+=(--cap-drop=MKNOD)                          # SEC-03: drop capabilities
+    _DOCKER_RUN_CMD+=(--cap-drop=AUDIT_WRITE)                    # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=SETFCAP)                        # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=SETPCAP)                        # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=NET_BIND_SERVICE)               # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=SYS_CHROOT)                     # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=FSETID)                         # SEC-03
+    _DOCKER_RUN_CMD+=(--restart unless-stopped)
+
+    # GUI-specific flags: shared memory and noVNC port mapping
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        _DOCKER_RUN_CMD+=(-p "127.0.0.1:${vnc_port}:6080")      # noVNC WebSocket port
+        _DOCKER_RUN_CMD+=(--shm-size=512m)                       # Shared memory for browser/GPU
+    fi
+
+    # MCP: ensure host.docker.internal resolves on Linux Engine
+    if [[ "$(uname -s)" == "Linux" ]]; then
+        local docker_variant
+        docker_variant="$(_docker_detect_variant)"
+        if [[ "$docker_variant" == "engine" ]]; then
+            _DOCKER_RUN_CMD+=(--add-host=host.docker.internal:host-gateway)
+        fi
+    fi
+
+    # Inject credentials as -e flags (from .env via credentials module)
+    credentials_load || true
+    credentials_get_docker_env_flags "$name"
+    _DOCKER_RUN_CMD+=("${CSM_DOCKER_ENV_FLAGS[@]}")
+
+    _DOCKER_RUN_CMD+=("$image_tag")
+}
+
+# ---------------------------------------------------------------------------
 # docker_run_instance -- Start a container with full security hardening
 # Args: $1 = instance name, $2 = SSH port
 # ---------------------------------------------------------------------------
@@ -61,7 +124,7 @@ docker_run_instance() {
     local workspace_dir
     workspace_dir="$(common_workspace_dir "$name")"
 
-    # Read instance type for type-aware configuration
+    # Read instance type for image tag construction
     local type
     type="$(instances_get_type "$name")"
     local image_tag="claude-sandbox-${name}-${type}"
@@ -72,53 +135,11 @@ docker_run_instance() {
     # Remove existing container first (BUG-01: prevent orphaned containers)
     docker rm -f "$container_name" 2>/dev/null || true
 
-    # Build docker run command using array (best practice for complex commands)
-    local cmd=(docker run -d)
-    cmd+=(--name "$container_name")
-    cmd+=(-p "127.0.0.1:${port}:22")                # SEC-02: bind SSH to localhost only
-    cmd+=(-v "${workspace_dir}:/home/claude/workspace")
-    cmd+=(-w /home/claude/workspace)
-    local mem_limit cpu_limit
-    mem_limit="$(settings_get '.defaults.memory_limit')"
-    cpu_limit="$(settings_get '.defaults.cpu_limit')"
-    cmd+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from config)
-    cmd+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
-    cmd+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
-    cmd+=(--cap-drop=MKNOD)                           # SEC-03: drop capabilities
-    cmd+=(--cap-drop=AUDIT_WRITE)                     # SEC-03
-    cmd+=(--cap-drop=SETFCAP)                         # SEC-03
-    cmd+=(--cap-drop=SETPCAP)                         # SEC-03
-    cmd+=(--cap-drop=NET_BIND_SERVICE)                # SEC-03
-    cmd+=(--cap-drop=SYS_CHROOT)                      # SEC-03
-    cmd+=(--cap-drop=FSETID)                          # SEC-03
-    cmd+=(--restart unless-stopped)
-
-    # GUI-specific flags: shared memory and noVNC port mapping
-    if [[ "$type" == "gui" ]]; then
-        local vnc_port
-        vnc_port="$(instances_get_vnc_port "$name")"
-        cmd+=(-p "127.0.0.1:${vnc_port}:6080")       # noVNC WebSocket port
-        cmd+=(--shm-size=512m)                        # Shared memory for browser/GPU
-    fi
-
-    # MCP: ensure host.docker.internal resolves on Linux Engine
-    if [[ "$(uname -s)" == "Linux" ]]; then
-        local docker_variant
-        docker_variant="$(_docker_detect_variant)"
-        if [[ "$docker_variant" == "engine" ]]; then
-            cmd+=(--add-host=host.docker.internal:host-gateway)
-        fi
-    fi
-
-    # Inject credentials as -e flags (from .env via credentials module)
-    credentials_load || true
-    credentials_get_docker_env_flags "$name"
-    cmd+=("${CSM_DOCKER_ENV_FLAGS[@]}")
-
-    cmd+=("$image_tag")
+    # Build docker run command using shared helper
+    _docker_build_run_cmd "$name" "$port" "$image_tag"
 
     msg_info "Starting container ${container_name} on port ${port}..."
-    if ! "${cmd[@]}"; then
+    if ! "${_DOCKER_RUN_CMD[@]}"; then
         die "Failed to start container ${container_name}"
     fi
     msg_ok "Container ${container_name} running on port ${port}"

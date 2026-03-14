@@ -121,10 +121,11 @@ backup_list() {
 # backup_restore -- Restore an instance from a backup directory
 # Args: $1 = instance name, $2 = path to backup directory
 #
-# NOTE: The docker run command below mirrors docker_run_instance in lib/docker.sh.
-# Resource limits (memory, CPU) are read from csm-config.json via settings_get.
-# Other flags are duplicated here so the restore uses the backup image tag
-# instead of the default "claude-sandbox-{name}" tag.
+# Uses _docker_build_run_cmd (lib/docker.sh) as the single source of truth
+# for docker run command construction, guaranteeing restored containers are
+# identical to freshly created ones (security, resource, GUI, MCP, and
+# credential flags all applied). After container start, ssh_write_config
+# ensures the SSH alias works immediately.
 # ---------------------------------------------------------------------------
 backup_restore() {
     local name="$1"
@@ -159,41 +160,17 @@ backup_restore() {
     local port
     port="$(instances_get_port "$name")"
 
-    # Step 5: Build docker run command (mirrors docker_run_instance in docker.sh)
-    # NOTE: Keep these flags in sync with docker_run_instance in lib/docker.sh
-    local cmd=(docker run -d)
-    cmd+=(--name "$container_name")
-    cmd+=(-p "127.0.0.1:${port}:22")                # SEC-02: bind SSH to localhost only
-    cmd+=(-v "${workspace_dir}:/home/claude/workspace")
-    cmd+=(-w /home/claude/workspace)
-    local mem_limit cpu_limit
-    mem_limit="$(settings_get '.defaults.memory_limit')"
-    cpu_limit="$(settings_get '.defaults.cpu_limit')"
-    cmd+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from csm-config.json)
-    cmd+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from csm-config.json)
-    cmd+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
-    cmd+=(--cap-drop=MKNOD)                           # SEC-03: drop capabilities
-    cmd+=(--cap-drop=AUDIT_WRITE)                     # SEC-03
-    cmd+=(--cap-drop=SETFCAP)                         # SEC-03
-    cmd+=(--cap-drop=SETPCAP)                         # SEC-03
-    cmd+=(--cap-drop=NET_BIND_SERVICE)                # SEC-03
-    cmd+=(--cap-drop=SYS_CHROOT)                      # SEC-03
-    cmd+=(--cap-drop=FSETID)                          # SEC-03
-    cmd+=(--restart unless-stopped)
-
-    # Inject credentials from current .env into restored container
-    credentials_load || true
-    credentials_get_docker_env_flags
-    cmd+=("${CSM_DOCKER_ENV_FLAGS[@]}")
-
-    # Use backup image tag (not the default build image)
-    cmd+=("$image_tag")
+    # Step 5: Build and run docker command using shared helper (guarantees identical flags to docker_run_instance)
+    _docker_build_run_cmd "$name" "$port" "$image_tag"
 
     msg_info "Starting restored container on port ${port}..."
-    if ! "${cmd[@]}"; then
+    if ! "${_DOCKER_RUN_CMD[@]}"; then
         msg_error "Failed to start container from backup image"
         return 1
     fi
+
+    # Step 6: Write SSH config so the alias works immediately after restore
+    ssh_write_config "$name" "$port"
 
     msg_ok "Restore complete. Instance '${name}' running from backup."
 }
