@@ -381,3 +381,67 @@ teardown() {
     local last_elem="${LAST_DOCKER_RUN_ARGS[${#LAST_DOCKER_RUN_ARGS[@]}-1]}"
     [[ "$last_elem" == "claude-sandbox-testcli2-cli" ]]
 }
+
+# ---------------------------------------------------------------------------
+# BACK-02: Auto-backup hook in docker_start_instance
+# ---------------------------------------------------------------------------
+
+@test "docker_start_instance calls backup_create when auto_backup=true and container is running" {
+    # Arrange: create a config with auto_backup enabled
+    settings_ensure_config_file
+    settings_set '.backup.auto_backup' 'true' 'bool'
+
+    # Track whether backup_create was called
+    backup_create() {
+        echo "backup_create_called:$1" >> "$TEST_CSM_ROOT/_backup_calls"
+    }
+    export -f backup_create
+
+    # Mock docker_status to return "running"
+    docker_status() { echo "running"; }
+    export -f docker_status
+
+    instances_add "autotest" "cli"
+    touch "$TEST_CSM_ROOT/scripts/Dockerfile"
+
+    # credentials_ensure_env_file is called first in docker_start_instance
+    credentials_ensure_env_file() { :; }
+    export -f credentials_ensure_env_file
+
+    run docker_start_instance "autotest"
+
+    # backup_create should have been called with the instance name
+    [ -f "$TEST_CSM_ROOT/_backup_calls" ]
+    grep -q "backup_create_called:autotest" "$TEST_CSM_ROOT/_backup_calls"
+}
+
+@test "docker_start_instance skips backup_create when container status is not created" {
+    # Arrange: create a config with auto_backup enabled
+    settings_ensure_config_file
+    settings_set '.backup.auto_backup' 'true' 'bool'
+
+    # Track whether backup_create was called
+    backup_create() {
+        echo "backup_create_called:$1" >> "$TEST_CSM_ROOT/_backup_calls"
+    }
+    export -f backup_create
+
+    # Mock docker_status to return "not created"
+    docker_status() { echo "not created"; }
+    export -f docker_status
+
+    instances_add "autotest2" "cli"
+    touch "$TEST_CSM_ROOT/scripts/Dockerfile"
+
+    credentials_ensure_env_file() { :; }
+    export -f credentials_ensure_env_file
+
+    run docker_start_instance "autotest2"
+
+    # backup_create must NOT have been called
+    if [ -f "$TEST_CSM_ROOT/_backup_calls" ]; then
+        ! grep -q "backup_create_called" "$TEST_CSM_ROOT/_backup_calls"
+    else
+        true
+    fi
+}

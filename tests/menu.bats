@@ -145,3 +145,21 @@ teardown() {
 @test "menu_main dispatches r to remove action" {
     grep -q 'r) menu_action_remove' "$REAL_CSM_ROOT/lib/menu.sh"
 }
+
+# ---------------------------------------------------------------------------
+# BACK-01/BACK-04: Backup and restore menu dispatch keys
+# ---------------------------------------------------------------------------
+
+@test "menu_show_actions output contains B and E dispatch keys" {
+    output="$(menu_show_actions)"
+    [[ "$output" == *"[B]"* ]]
+    [[ "$output" == *"[E]"* ]]
+}
+
+@test "menu_main dispatches b to backup action" {
+    grep -q 'b) menu_action_backup' "$REAL_CSM_ROOT/lib/menu.sh"
+}
+
+@test "menu_main dispatches e to restore action" {
+    grep -q 'e) menu_action_restore' "$REAL_CSM_ROOT/lib/menu.sh"
+}
