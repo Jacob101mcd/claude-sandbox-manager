@@ -52,12 +52,11 @@ settings_ensure_config_file() {
     jq -n \
         --arg mem "2g" \
         --argjson cpu 2 \
-        --arg ctype "cli" \
         --argjson ab "$auto_backup" \
         --argjson port "$mcp_port" \
         '{
           defaults: {
-            container_type: $ctype,
+            container_type: null,
             memory_limit: $mem,
             cpu_limit: $cpu
           },
@@ -201,7 +200,11 @@ _settings_cycle_container_type() {
     current="$(settings_get '.defaults.container_type')"
 
     local new_val
-    if [[ "$current" == "cli" ]]; then new_val="gui"; else new_val="cli"; fi
+    case "$current" in
+        "cli") new_val="gui" ;;
+        "gui") new_val="cli" ;;
+        *)     new_val="cli" ;;   # null/"" -> cli (first explicit set)
+    esac
 
     settings_set '.defaults.container_type' "$new_val" 'string'
     msg_ok "Default container type: ${new_val}"
@@ -276,10 +279,17 @@ _settings_show_preferences_menu() {
     cpu="$(settings_get '.defaults.cpu_limit')"
     port="$(settings_get '.integrations.mcp_port')"
 
+    local ctype_label
+    case "$ctype" in
+        "cli") ctype_label="Minimal CLI" ;;
+        "gui") ctype_label="GUI Desktop" ;;
+        *)     ctype_label="Ask each time" ;;
+    esac
+
     echo ""
     echo "${_MENU_CLR_CYAN}--- Preferences ---${_CLR_RESET}"
     echo "  [1] Auto-backup:          ${auto_bk}"
-    echo "  [2] Default container:    ${ctype}"
+    echo "  [2] Default container:    ${ctype_label}"
     echo "  [3] Memory limit:         ${mem}"
     echo "  [4] CPU limit:            ${cpu}"
     echo "  [5] MCP port:             ${port}"
