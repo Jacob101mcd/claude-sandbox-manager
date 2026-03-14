@@ -68,3 +68,27 @@ load test_helper
 @test "entrypoint.sh contains websockify startup" {
   grep -q 'websockify' "$CSM_ROOT/scripts/entrypoint.sh"
 }
+
+# ---------------------------------------------------------------------------
+# Claude Code native installer (INST-01)
+# ---------------------------------------------------------------------------
+
+@test "Dockerfile installs Claude Code via native installer not NPM" {
+  grep -q 'claude.ai/install.sh' "$CSM_ROOT/scripts/Dockerfile"
+}
+
+# ---------------------------------------------------------------------------
+# GitHub CLI installation (CRED-02)
+# ---------------------------------------------------------------------------
+
+@test "Dockerfile installs GitHub CLI from official apt repository" {
+  grep -q 'githubcli-archive-keyring' "$CSM_ROOT/scripts/Dockerfile"
+}
+
+# ---------------------------------------------------------------------------
+# No credentials baked into image layers (CRED-04)
+# ---------------------------------------------------------------------------
+
+@test "Dockerfile contains no hardcoded credential env vars" {
+  ! grep -qiE 'ANTHROPIC_API_KEY|GITHUB_TOKEN' "$CSM_ROOT/scripts/Dockerfile"
+}
