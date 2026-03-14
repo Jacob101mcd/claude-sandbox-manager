@@ -30,8 +30,9 @@ Containers are sandboxed but not VMs. Kernel-level exploits could theoretically 
 - `SETFCAP` — prevents setting file capabilities
 - `SETPCAP` — prevents changing process capabilities
 - `NET_BIND_SERVICE` — prevents binding to privileged ports
-- `SYS_CHROOT` — prevents chroot calls
 - `FSETID` — prevents setuid/setgid on file creation
+
+> **Note:** `SYS_CHROOT` is intentionally *not* dropped — OpenSSH's privilege separation requires `chroot()` to sandbox its pre-authentication child process. Dropping it breaks all SSH connections.
 
 `--no-new-privileges` is also set, preventing privilege escalation via setuid binaries inside the container.
 
@@ -104,7 +105,7 @@ The security boundary differs depending on your Docker installation:
 
 ## What We Do
 
-- Drop 7 Linux capabilities on every container
+- Drop 6 Linux capabilities on every container
 - Set `--no-new-privileges` to prevent privilege escalation
 - Enforce configurable memory and CPU limits
 - SSH bound to `127.0.0.1` only (no external exposure)

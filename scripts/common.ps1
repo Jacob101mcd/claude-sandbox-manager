@@ -884,7 +884,6 @@ function Invoke-Restore($Name, $BackupDir) {
         "--cap-drop=SETFCAP",
         "--cap-drop=SETPCAP",
         "--cap-drop=NET_BIND_SERVICE",
-        "--cap-drop=SYS_CHROOT",
         "--cap-drop=FSETID",
         "--restart", "unless-stopped")
 
@@ -977,7 +976,6 @@ function Start-SandboxInstance($Name, [switch]$NoCache) {
         "--cap-drop=SETFCAP",
         "--cap-drop=SETPCAP",
         "--cap-drop=NET_BIND_SERVICE",
-        "--cap-drop=SYS_CHROOT",
         "--cap-drop=FSETID",
         "--restart", "unless-stopped")
 
