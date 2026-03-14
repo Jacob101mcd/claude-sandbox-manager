@@ -392,7 +392,7 @@ function Get-EnvCredentials {
     return $creds
 }
 
-function Get-DockerEnvFlags {
+function Get-DockerEnvFlags($Name) {
     $creds = Get-EnvCredentials
     $flags = @()
     foreach ($key in @("ANTHROPIC_API_KEY", "GITHUB_TOKEN")) {
@@ -403,6 +403,32 @@ function Get-DockerEnvFlags {
             Write-Host "[!] Credential '$key' not set in .env" -ForegroundColor Yellow
         }
     }
+
+    # Integration flags: MCP and remote control (mirrors lib/credentials.sh)
+    if ($Name) {
+        $instances = Get-Instances
+        $inst = $instances.PSObject.Properties[$Name]
+        if ($inst) {
+            # MCP gateway
+            $mcpEnabled = $inst.Value.PSObject.Properties["mcp_enabled"]
+            if ($mcpEnabled -and $mcpEnabled.Value -eq $true) {
+                $mcpPort = Get-Setting '.integrations.mcp_port'
+                if (-not $mcpPort) { $mcpPort = "8811" }
+                $flags += "-e"
+                $flags += "CSM_MCP_ENABLED=1"
+                $flags += "-e"
+                $flags += "CSM_MCP_PORT=$mcpPort"
+            }
+
+            # Remote control
+            $rcEnabled = $inst.Value.PSObject.Properties["remote_control"]
+            if ($rcEnabled -and $rcEnabled.Value -eq $true) {
+                $flags += "-e"
+                $flags += "CSM_REMOTE_CONTROL=1"
+            }
+        }
+    }
+
     return $flags
 }
 
@@ -844,7 +870,7 @@ function Invoke-Restore($Name, $BackupDir) {
     if (-not $cpuLimit) { $cpuLimit = "2" }
 
     Ensure-EnvFile
-    $envFlags = Get-DockerEnvFlags
+    $envFlags = Get-DockerEnvFlags $Name
 
     $runArgs = @("run", "-d", "--name", $containerName,
         "-p", "127.0.0.1:${port}:22",
@@ -930,7 +956,7 @@ function Start-SandboxInstance($Name, [switch]$NoCache) {
 
     # Load credentials from .env
     Ensure-EnvFile
-    $envFlags = Get-DockerEnvFlags
+    $envFlags = Get-DockerEnvFlags $Name
 
     # Read resource limits from config
     $memLimit = Get-Setting '.defaults.memory_limit'
