@@ -115,10 +115,24 @@ menu_select_instance() {
 }
 
 # ---------------------------------------------------------------------------
-# menu_select_container_type -- Prompt user to choose a container type
-# Returns: type string on stdout (currently always "cli")
+# menu_select_container_type -- Return container type, auto-skipping if default is set
+# Returns: type string on stdout; auto-skip message on stderr when default is set
 # ---------------------------------------------------------------------------
 menu_select_container_type() {
+    local default_type
+    default_type="$(settings_get '.defaults.container_type')"
+
+    if [[ -n "$default_type" ]]; then
+        # User has set a preference -- auto-skip
+        local label
+        if [[ "$default_type" == "gui" ]]; then label="GUI Desktop"; else label="Minimal CLI"; fi
+        echo "-> Using default: ${label}" >&2
+        echo "  Change in [P] Preferences" >&2
+        echo "$default_type"
+        return
+    fi
+
+    # Null/unset -- show interactive prompt
     echo ""
     echo "Select container type:"
     echo "  [1] Minimal CLI"
