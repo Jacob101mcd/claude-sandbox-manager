@@ -12,7 +12,7 @@ Multiple sandboxes can run simultaneously — each with its own container, SSH p
 
 ## Why I built this
 
-I wanted to let Claude Code loose on a project without worrying about my machine. Claude Code is powerful, and that power cuts both ways: give it enough autonomy and it will happily refactor things you didn't ask it to touch, delete files it thinks are redundant, or install packages you didn't expect. Running it directly on my development machine felt like handing someone the keys to my house and saying "fix the kitchen, don't touch the bedroom."
+I wanted to let Claude Code loose on a project without worrying about my machine. Claude Code is powerful, and that power cuts both ways: give it enough autonomy and it will happily refactor things you didn't ask it to touch, delete files it thinks are redundant, or install packages you didn't expect. 
 
 The obvious answer is containers. But spinning up a Docker environment with the right SSH setup, key management, and port assignments every time you start a new project is tedious. I wanted something I could just run, and have a ready-to-go Claude Code environment in a minute or two without thinking about Docker.
 
@@ -44,7 +44,18 @@ Finally, I wanted this to be approachable for people who aren't Docker experts. 
 
 ## Quick Start
 
-### Linux / macOS
+### Windows
+
+```batch
+git clone https://github.com/Jacob101mcd/claude-sandbox-manager.git
+cd claude-sandbox-manager
+```
+
+Double-click `claude-manager.bat` to open the interactive manager. The same flow applies — auto-creates a default instance, choose `[S] Start`, then connect via `ssh claude-sandbox`.
+
+---
+
+### Linux / macOS (BETA, not fully tested)
 
 ```bash
 git clone https://github.com/Jacob101mcd/claude-sandbox-manager.git
@@ -66,17 +77,6 @@ Then run Claude Code inside the container:
 ```bash
 claude --dangerously-skip-permissions
 ```
-
-### Windows
-
-```batch
-git clone https://github.com/Jacob101mcd/claude-sandbox-manager.git
-cd claude-sandbox-manager
-```
-
-Double-click `claude-manager.bat` to open the interactive manager. The same flow applies — auto-creates a default instance, choose `[S] Start`, then connect via `ssh claude-sandbox`.
-
----
 
 ## Multi-Instance Support
 
@@ -133,7 +133,7 @@ Access settings via **`[P] Preferences`** in the manager's main menu.
 
 | Setting | Default | Description |
 |---|---|---|
-| **Auto-backup** | Off | Automatically backup an instance before stopping it |
+| **Auto-backup** | Off | Automatically backup an instance on container start |
 | **Default container type** | `cli` | Container variant to use when creating new instances (`cli` or `gui`) |
 | **Memory limit** | `2g` | Docker memory limit per container (e.g. `1g`, `4g`, `512m`) |
 | **CPU limit** | `2` | Docker CPU limit per container (e.g. `1`, `0.5`, `4`) |
