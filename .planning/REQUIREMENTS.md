@@ -68,13 +68,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SEC-03**: Docker capabilities dropped to minimum required set
 - [x] **SEC-04**: Resource limits set on containers (memory, CPU)
 - [x] **SEC-05**: Security risk analysis documented with mitigations
-- [ ] **SEC-06**: Appropriate disclaimers added to README
+- [x] **SEC-06**: Appropriate disclaimers added to README
 
 ### Documentation
 
-- [ ] **DOC-01**: README includes "Why I built this" section
-- [ ] **DOC-02**: README includes "Who is this for" section
-- [ ] **DOC-03**: README includes security disclaimers and risk acknowledgments
+- [x] **DOC-01**: README includes "Why I built this" section
+- [x] **DOC-02**: README includes "Who is this for" section
+- [x] **DOC-03**: README includes security disclaimers and risk acknowledgments
 
 ### Bug Fixes
 
@@ -155,10 +155,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | SETT-03 | Phase 6 | Complete |
 | SETT-04 | Phase 6 | Complete |
 | SEC-05 | Phase 6 | Complete |
-| SEC-06 | Phase 6 | Pending |
-| DOC-01 | Phase 6 | Pending |
-| DOC-02 | Phase 6 | Pending |
-| DOC-03 | Phase 6 | Pending |
+| SEC-06 | Phase 6 | Complete |
+| DOC-01 | Phase 6 | Complete |
+| DOC-02 | Phase 6 | Complete |
+| DOC-03 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 41 total

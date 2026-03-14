@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Backup + Data Safety** - Full container backup and restore that correctly captures both container filesystem and workspace volume data, with optional auto-backup on startup (completed 2026-03-13)
 - [x] **Phase 4: GUI Container Variant** - Desktop environment container (Xfce + noVNC) accessible in-browser, sharing the minimal variant's base stage (completed 2026-03-13)
 - [ ] **Phase 5: Integration Layer** - Docker Desktop MCP Toolkit auto-connection, Claude Code remote control option, and resource limit enforcement
-- [ ] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product
+- [x] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product (completed 2026-03-14)
 
 ## Phase Details
 
@@ -110,7 +110,7 @@ Plans:
   3. The README explains "Why I built this" and "Who is this for" in plain language
   4. The README contains a security risk summary and appropriate disclaimers about running AI agents in containers
   5. A documented security risk analysis (with mitigations) exists and is referenced from the README
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 06-01-PLAN.md — Settings module (lib/settings.sh) + config integration + name validation + BATS tests
@@ -129,4 +129,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Backup + Data Safety | 2/2 | Complete   | 2026-03-13 |
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 1/2 | In Progress|  |
-| 6. Settings + Documentation | 2/3 | In Progress|  |
+| 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
