@@ -16,7 +16,7 @@ if (-not $name) { pause; exit 1 }
 
 # Delegate to Start-SandboxInstance which handles type-aware builds,
 # VNC port mapping, security hardening, and port resolution
-$ok = Start-SandboxInstance $name
+$ok = Start-SandboxInstance $name -NoCache
 if (-not $ok) {
     Write-Host "`n[X] Rebuild failed." -ForegroundColor Red
     pause; exit 1

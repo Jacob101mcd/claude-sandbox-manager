@@ -886,7 +886,7 @@ function Invoke-Restore($Name, $BackupDir) {
 # Start sandbox instance (updated: security hardening, type-aware build/run)
 # ===========================================================================
 
-function Start-SandboxInstance($Name) {
+function Start-SandboxInstance($Name, [switch]$NoCache) {
     $port = Register-Instance $Name
     $port = Resolve-Port $Name $port
 
@@ -915,7 +915,9 @@ function Start-SandboxInstance($Name) {
     }
 
     # Build image with --target flag for multi-stage Dockerfile
-    docker build -t $imageName --target $type -f "$Script:Root\scripts\Dockerfile" "$Script:Root"
+    $buildArgs = @("build", "-t", $imageName, "--target", $type, "-f", "$Script:Root\scripts\Dockerfile", "$Script:Root")
+    if ($NoCache) { $buildArgs += "--no-cache" }
+    & docker @buildArgs
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "`n[X] Docker build failed." -ForegroundColor Red
