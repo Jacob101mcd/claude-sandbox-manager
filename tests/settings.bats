@@ -42,10 +42,14 @@ teardown() {
     [[ "$val" == "2" ]]
 }
 
-@test "settings_ensure_config_file sets default container_type to cli" {
+@test "settings_ensure_config_file sets default container_type to null" {
     settings_ensure_config_file
-    val="$(jq -r '.defaults.container_type' "${CSM_ROOT}/csm-config.json")"
-    [[ "$val" == "cli" ]]
+    # Raw jq should return "null" (the JSON null literal, not string "null")
+    raw="$(jq '.defaults.container_type' "${CSM_ROOT}/csm-config.json")"
+    [[ "$raw" == "null" ]]
+    # settings_get should return empty string for null
+    val="$(settings_get '.defaults.container_type')"
+    [[ -z "$val" ]]
 }
 
 @test "settings_ensure_config_file sets backup.auto_backup to false" {
@@ -263,4 +267,57 @@ JSON
 @test "_settings_validate_cpu rejects negative number" {
     run _settings_validate_cpu "-1"
     [[ "$status" -ne 0 ]]
+}
+
+# ---------------------------------------------------------------------------
+# _settings_cycle_container_type -- null-aware cycling
+# ---------------------------------------------------------------------------
+
+@test "_settings_cycle_container_type from null sets cli" {
+    settings_ensure_config_file
+    # Config starts with null container_type
+    _settings_cycle_container_type
+    val="$(settings_get '.defaults.container_type')"
+    [[ "$val" == "cli" ]]
+}
+
+@test "_settings_cycle_container_type from cli sets gui" {
+    settings_ensure_config_file
+    settings_set '.defaults.container_type' 'cli' 'string'
+    _settings_cycle_container_type
+    val="$(settings_get '.defaults.container_type')"
+    [[ "$val" == "gui" ]]
+}
+
+@test "_settings_cycle_container_type from gui sets cli" {
+    settings_ensure_config_file
+    settings_set '.defaults.container_type' 'gui' 'string'
+    _settings_cycle_container_type
+    val="$(settings_get '.defaults.container_type')"
+    [[ "$val" == "cli" ]]
+}
+
+# ---------------------------------------------------------------------------
+# _settings_show_preferences_menu -- human-readable labels
+# ---------------------------------------------------------------------------
+
+@test "_settings_show_preferences_menu shows Ask each time when null" {
+    settings_ensure_config_file
+    # container_type is null by default
+    result="$(_settings_show_preferences_menu)"
+    [[ "$result" == *"Ask each time"* ]]
+}
+
+@test "_settings_show_preferences_menu shows Minimal CLI when cli" {
+    settings_ensure_config_file
+    settings_set '.defaults.container_type' 'cli' 'string'
+    result="$(_settings_show_preferences_menu)"
+    [[ "$result" == *"Minimal CLI"* ]]
+}
+
+@test "_settings_show_preferences_menu shows GUI Desktop when gui" {
+    settings_ensure_config_file
+    settings_set '.defaults.container_type' 'gui' 'string'
+    result="$(_settings_show_preferences_menu)"
+    [[ "$result" == *"GUI Desktop"* ]]
 }
