@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Integration Layer** - Docker Desktop MCP Toolkit auto-connection, Claude Code remote control option, and resource limit enforcement
 - [x] **Phase 6: Settings + Documentation** - Interactive settings CLI, config file, README additions, and security disclaimers completing the user-facing product (completed 2026-03-14)
 - [x] **Phase 7: Fix Backup Restore Integration** - Pass instance name to credential flags on restore, call ssh_write_config after restore, fix "Restore → SSH with MCP/RC" flow (completed 2026-03-14)
-- [ ] **Phase 8: Wire Default Container Type** - menu_select_container_type reads defaults.container_type from config, fix "Preferences → Effect" flow
+- [x] **Phase 8: Wire Default Container Type** - menu_select_container_type reads defaults.container_type from config, fix "Preferences → Effect" flow (completed 2026-03-14)
 
 ## Phase Details
 
@@ -134,7 +134,7 @@ Plans:
 **Depends on**: Phase 6
 **Requirements**: SETT-01, SETT-04
 **Gap Closure:** Closes INT-03, Flow "Preferences → Effect (default container type)" from audit
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] 08-01-PLAN.md — Null factory default, auto-skip in menu, null-aware cycle + display labels
@@ -153,4 +153,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Integration Layer | 1/2 | In Progress|  |
 | 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
 | 7. Fix Backup Restore Integration | 1/1 | Complete   | 2026-03-14 |
-| 8. Wire Default Container Type | 0/1 | Planned |  |
+| 8. Wire Default Container Type | 1/1 | Complete   | 2026-03-14 |

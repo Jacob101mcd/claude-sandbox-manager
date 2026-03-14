@@ -150,10 +150,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | MCP-02 | Phase 5 | Complete |
 | MCP-03 | Phase 5 | Complete |
 | INST-02 | Phase 5, Phase 7 | Complete |
-| SETT-01 | Phase 6, Phase 8 | Pending |
+| SETT-01 | Phase 6, Phase 8 | Complete |
 | SETT-02 | Phase 6 | Complete |
 | SETT-03 | Phase 6 | Complete |
-| SETT-04 | Phase 6, Phase 8 | Pending |
+| SETT-04 | Phase 6, Phase 8 | Complete |
 | SEC-05 | Phase 6 | Complete |
 | SEC-06 | Phase 6 | Complete |
 | DOC-01 | Phase 6 | Complete |
