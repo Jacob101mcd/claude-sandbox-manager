@@ -7,6 +7,9 @@ if (-not (Test-DockerRunning)) { pause; exit 1 }
 # Auto-migrate old single-instance workspace on first run
 Invoke-WorkspaceMigration
 
+# Ensure config file exists before any settings reads
+Ensure-ConfigFile
+
 # If no instances exist yet, auto-register default
 $instances = Get-Instances
 if (@($instances.PSObject.Properties).Count -eq 0) {
@@ -23,6 +26,9 @@ while ($true) {
     Write-Host "  [T] Stop an instance"
     Write-Host "  [N] Create new instance"
     Write-Host "  [R] Remove an instance"
+    Write-Host "  [B] Backup an instance"
+    Write-Host "  [E] Restore an instance"
+    Write-Host "  [P] Preferences"
     Write-Host "  [Q] Quit"
 
     $action = Read-Host "`nChoice"
@@ -31,7 +37,21 @@ while ($true) {
         "S" {
             $name = Select-Instance "Select instance to start:"
             if ($name) {
-                Start-SandboxInstance $name | Out-Null
+                $ok = Start-SandboxInstance $name
+                if ($ok) {
+                    $type    = Get-InstanceType $name
+                    $vncPort = Get-InstanceVncPort $name
+                    if ($type -eq "gui" -and $vncPort) {
+                        Write-Host "[OK] noVNC desktop: http://localhost:$vncPort" -ForegroundColor Green
+                        $answer = Read-Host "Open in browser? (y/N)"
+                        if ($answer -eq "y" -or $answer -eq "Y") {
+                            Start-Process "http://localhost:$vncPort"
+                        }
+                    } else {
+                        $alias = Get-SshAlias $name
+                        Write-Host "Connect via: ssh $alias" -ForegroundColor Cyan
+                    }
+                }
             }
         }
         "T" {
@@ -55,7 +75,27 @@ while ($true) {
                 Write-Host "Instance '$name' already exists." -ForegroundColor Red
                 continue
             }
-            Start-SandboxInstance $name | Out-Null
+
+            # Prompt for container type
+            $type = Select-ContainerType
+
+            # Register with type before starting
+            Register-Instance $name $type | Out-Null
+
+            $ok = Start-SandboxInstance $name
+            if ($ok) {
+                $vncPort = Get-InstanceVncPort $name
+                if ($type -eq "gui" -and $vncPort) {
+                    Write-Host "[OK] noVNC desktop: http://localhost:$vncPort" -ForegroundColor Green
+                    $answer = Read-Host "Open in browser? (y/N)"
+                    if ($answer -eq "y" -or $answer -eq "Y") {
+                        Start-Process "http://localhost:$vncPort"
+                    }
+                } else {
+                    $alias = Get-SshAlias $name
+                    Write-Host "Connect via: ssh $alias" -ForegroundColor Cyan
+                }
+            }
         }
         "R" {
             $name = Select-Instance "Select instance to remove:"
@@ -94,8 +134,8 @@ while ($true) {
 
             $deleteFiles = Read-Host "Also delete workspace and backups for '$name'? (y/N)"
             if ($deleteFiles -eq "y" -or $deleteFiles -eq "Y") {
-                $wsDir = Get-WorkspaceDir $name
-                $bkDir = Get-BackupDir $name
+                $wsDir  = Get-WorkspaceDir $name
+                $bkDir  = Get-BackupDir $name
                 $sshDir = Get-SshDir $name
                 if (Test-Path $wsDir) { Remove-Item $wsDir -Recurse -Force }
                 if (Test-Path $bkDir) { Remove-Item $bkDir -Recurse -Force }
@@ -108,6 +148,52 @@ while ($true) {
             }
 
             Write-Host "[OK] Instance '$name' removed." -ForegroundColor Green
+        }
+        "B" {
+            $name = Select-Instance "Select instance to back up:"
+            if ($name) {
+                Invoke-Backup $name | Out-Null
+            }
+        }
+        "E" {
+            $name = Select-Instance "Select instance to restore:"
+            if (-not $name) { continue }
+
+            $backupDirs = Get-BackupList $name
+            if ($backupDirs.Count -eq 0) { continue }
+
+            $choice = Read-Host "`nSelect backup number"
+            if ($choice -notmatch '^[0-9]+$' -or [int]$choice -lt 1 -or [int]$choice -gt $backupDirs.Count) {
+                Write-Host "Invalid selection." -ForegroundColor Red
+                continue
+            }
+            $selectedDir = $backupDirs[[int]$choice - 1]
+
+            Write-Host "[!] This will REPLACE the current instance with the selected backup." -ForegroundColor Yellow
+            $confirm = Read-Host "Type YES to confirm restore"
+            if ($confirm -ne "YES") {
+                Write-Host "Cancelled." -ForegroundColor Yellow
+                continue
+            }
+
+            $ok = Invoke-Restore $name $selectedDir
+            if ($ok) {
+                $type    = Get-InstanceType $name
+                $vncPort = Get-InstanceVncPort $name
+                if ($type -eq "gui" -and $vncPort) {
+                    Write-Host "[OK] noVNC desktop: http://localhost:$vncPort" -ForegroundColor Green
+                    $answer = Read-Host "Open in browser? (y/N)"
+                    if ($answer -eq "y" -or $answer -eq "Y") {
+                        Start-Process "http://localhost:$vncPort"
+                    }
+                } else {
+                    $alias = Get-SshAlias $name
+                    Write-Host "Connect via: ssh $alias" -ForegroundColor Cyan
+                }
+            }
+        }
+        "P" {
+            Show-PreferencesMenu
         }
         "Q" { exit 0 }
         default { Write-Host "Invalid choice." -ForegroundColor Red }
