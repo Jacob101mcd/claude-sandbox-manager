@@ -124,6 +124,10 @@ Plans:
 **Depends on**: Phase 3, Phase 5
 **Requirements**: BACK-03, BACK-04, MCP-01, INST-02
 **Gap Closure:** Closes INT-01, INT-02, Flow "Restore → SSH with MCP/RC" from audit
+**Plans:** 1 plan
+
+Plans:
+- [ ] 07-01-PLAN.md — Extract shared docker run helper, fix backup_restore flags/SSH, type-aware restore UX
 
 ### Phase 8: Wire Default Container Type
 **Goal:** The `defaults.container_type` setting from user preferences is applied when creating new instances, fixing the "Preferences → Effect" end-to-end flow
@@ -144,5 +148,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. GUI Container Variant | 2/2 | Complete   | 2026-03-13 |
 | 5. Integration Layer | 1/2 | In Progress|  |
 | 6. Settings + Documentation | 3/3 | Complete   | 2026-03-14 |
-| 7. Fix Backup Restore Integration | 0/0 | Pending |  |
+| 7. Fix Backup Restore Integration | 0/1 | Pending |  |
 | 8. Wire Default Container Type | 0/0 | Pending |  |
