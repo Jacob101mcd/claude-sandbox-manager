@@ -330,3 +330,54 @@ teardown() {
     done
     ! $found
 }
+
+# ---------------------------------------------------------------------------
+# _docker_build_run_cmd helper tests -- phase 07 additions
+# ---------------------------------------------------------------------------
+
+@test "_docker_build_run_cmd populates _DOCKER_RUN_CMD with correct image tag" {
+    instances_add "testcli" "cli"
+    _docker_build_run_cmd "testcli" "2222" "my-custom-tag"
+    # Last element of _DOCKER_RUN_CMD should be the image tag
+    local last_elem="${_DOCKER_RUN_CMD[${#_DOCKER_RUN_CMD[@]}-1]}"
+    [[ "$last_elem" == "my-custom-tag" ]]
+}
+
+@test "_docker_build_run_cmd includes --shm-size=512m for gui type" {
+    instances_add "testgui" "gui"
+    _docker_build_run_cmd "testgui" "2222" "my-gui-tag"
+    local found=false
+    local arg
+    for arg in "${_DOCKER_RUN_CMD[@]}"; do
+        if [[ "$arg" == "--shm-size=512m" ]]; then
+            found=true
+        fi
+    done
+    $found
+}
+
+@test "_docker_build_run_cmd includes --add-host on Linux Engine" {
+    uname() { echo "Linux"; }
+    export -f uname
+    _docker_detect_variant() { echo "engine"; }
+    export -f _docker_detect_variant
+
+    instances_add "testhost2" "cli"
+    _docker_build_run_cmd "testhost2" "2222" "my-tag"
+    local found=false
+    local arg
+    for arg in "${_DOCKER_RUN_CMD[@]}"; do
+        if [[ "$arg" == "--add-host=host.docker.internal:host-gateway" ]]; then
+            found=true
+        fi
+    done
+    $found
+}
+
+@test "docker_run_instance delegates to _docker_build_run_cmd with type-aware image tag" {
+    instances_add "testcli2" "cli"
+    docker_run_instance "testcli2" "2222"
+    # The image tag passed to docker run should be claude-sandbox-testcli2-cli
+    local last_elem="${LAST_DOCKER_RUN_ARGS[${#LAST_DOCKER_RUN_ARGS[@]}-1]}"
+    [[ "$last_elem" == "claude-sandbox-testcli2-cli" ]]
+}
