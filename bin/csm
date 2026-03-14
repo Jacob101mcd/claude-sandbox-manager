@@ -14,6 +14,7 @@ export CSM_ROOT
 
 # Source library modules in dependency order
 source "$CSM_ROOT/lib/common.sh"
+source "$CSM_ROOT/lib/settings.sh"
 source "$CSM_ROOT/lib/credentials.sh"
 source "$CSM_ROOT/lib/platform.sh"
 source "$CSM_ROOT/lib/instances.sh"
@@ -25,6 +26,7 @@ source "$CSM_ROOT/lib/menu.sh"
 # Startup checks
 platform_detect
 platform_check_dependencies
+settings_ensure_config_file
 docker_check_running
 
 # Launch interactive menu

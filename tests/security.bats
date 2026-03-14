@@ -10,12 +10,12 @@ load test_helper
   grep -q 'cap-drop' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "lib/docker.sh sets memory limit" {
-  grep -q 'memory=2g' "$CSM_ROOT/lib/docker.sh"
+@test "lib/docker.sh sets memory limit from config" {
+  grep -q 'settings_get.*memory_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "lib/docker.sh sets CPU limit" {
-  grep -q 'cpus=2' "$CSM_ROOT/lib/docker.sh"
+@test "lib/docker.sh sets CPU limit from config" {
+  grep -q 'settings_get.*cpu_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
 @test "lib/docker.sh sets no-new-privileges" {

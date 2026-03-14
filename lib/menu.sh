@@ -62,6 +62,7 @@ menu_show_actions() {
     echo "  [R] Remove an instance"
     echo "  [B] Backup an instance"
     echo "  [E] Restore an instance"
+    echo "  [P] Preferences"
     echo "  [Q] Quit"
 }
 
@@ -182,14 +183,13 @@ menu_action_new() {
     local input
     read -rp "Enter instance name (lowercase, no spaces): " input
 
-    # Sanitize: keep only lowercase alphanumeric and hyphens
+    # Validate: 4-10 chars, lowercase letters/digits/hyphens, no leading/trailing hyphen
     local name
-    name="$(echo "$input" | tr -cd 'a-z0-9-')"
-
-    if [[ -z "$name" ]]; then
-        msg_error "Invalid name."
+    if ! [[ "$input" =~ ^[a-z0-9][a-z0-9-]{2,8}[a-z0-9]$ ]]; then
+        msg_error "Invalid name. Use 4-10 characters: lowercase letters, digits, hyphens. Cannot start or end with a hyphen."
         return
     fi
+    name="$input"
 
     # Check if already exists
     local existing_port
@@ -358,6 +358,7 @@ menu_main() {
             r) menu_action_remove ;;
             b) menu_action_backup ;;
             e) menu_action_restore ;;
+            p) settings_menu ;;
             q) exit 0 ;;
             *) msg_error "Invalid choice." ;;
         esac

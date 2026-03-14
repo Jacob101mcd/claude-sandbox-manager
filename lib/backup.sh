@@ -121,9 +121,10 @@ backup_list() {
 # backup_restore -- Restore an instance from a backup directory
 # Args: $1 = instance name, $2 = path to backup directory
 #
-# NOTE: The docker run command below must stay in sync with docker_run_instance
-# in lib/docker.sh. It duplicates those flags so the restore uses the backup
-# image tag instead of the default "claude-sandbox-{name}" tag.
+# NOTE: The docker run command below mirrors docker_run_instance in lib/docker.sh.
+# Resource limits (memory, CPU) are read from csm-config.json via settings_get.
+# Other flags are duplicated here so the restore uses the backup image tag
+# instead of the default "claude-sandbox-{name}" tag.
 # ---------------------------------------------------------------------------
 backup_restore() {
     local name="$1"
@@ -165,8 +166,11 @@ backup_restore() {
     cmd+=(-p "127.0.0.1:${port}:22")                # SEC-02: bind SSH to localhost only
     cmd+=(-v "${workspace_dir}:/home/claude/workspace")
     cmd+=(-w /home/claude/workspace)
-    cmd+=(--memory=2g)                                # SEC-04: memory limit
-    cmd+=(--cpus=2)                                   # SEC-04: CPU limit
+    local mem_limit cpu_limit
+    mem_limit="$(settings_get '.defaults.memory_limit')"
+    cpu_limit="$(settings_get '.defaults.cpu_limit')"
+    cmd+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from csm-config.json)
+    cmd+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from csm-config.json)
     cmd+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
     cmd+=(--cap-drop=MKNOD)                           # SEC-03: drop capabilities
     cmd+=(--cap-drop=AUDIT_WRITE)                     # SEC-03

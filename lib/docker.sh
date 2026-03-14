@@ -78,8 +78,11 @@ docker_run_instance() {
     cmd+=(-p "127.0.0.1:${port}:22")                # SEC-02: bind SSH to localhost only
     cmd+=(-v "${workspace_dir}:/home/claude/workspace")
     cmd+=(-w /home/claude/workspace)
-    cmd+=(--memory=2g)                                # SEC-04: memory limit
-    cmd+=(--cpus=2)                                   # SEC-04: CPU limit
+    local mem_limit cpu_limit
+    mem_limit="$(settings_get '.defaults.memory_limit')"
+    cpu_limit="$(settings_get '.defaults.cpu_limit')"
+    cmd+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from config)
+    cmd+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
     cmd+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
     cmd+=(--cap-drop=MKNOD)                           # SEC-03: drop capabilities
     cmd+=(--cap-drop=AUDIT_WRITE)                     # SEC-03
@@ -162,8 +165,7 @@ docker_start_instance() {
     credentials_ensure_env_file
 
     # Auto-backup: capture last-known-good state before starting
-    credentials_load || true
-    if [[ "${CSM_AUTO_BACKUP:-}" == "1" ]]; then
+    if [[ "$(settings_get_bool '.backup.auto_backup')" == "true" ]]; then
         local status
         status="$(docker_status "$name")"
         if [[ "$status" == "running" || "$status" == "exited" ]]; then

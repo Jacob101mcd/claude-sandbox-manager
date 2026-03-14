@@ -24,12 +24,12 @@ load test_helper
   grep -q 'cap-drop=FSETID' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "docker.sh sets memory limit" {
-  grep -q 'memory=2g' "$CSM_ROOT/lib/docker.sh"
+@test "docker.sh sets memory limit from config" {
+  grep -q 'settings_get.*memory_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "docker.sh sets CPU limit" {
-  grep -q 'cpus=2' "$CSM_ROOT/lib/docker.sh"
+@test "docker.sh sets CPU limit from config" {
+  grep -q 'settings_get.*cpu_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
 @test "docker.sh sets no-new-privileges" {
@@ -144,6 +144,7 @@ setup() {
 
     # Source the actual library files under test
     source "$REAL_CSM_ROOT/lib/common.sh"
+    source "$REAL_CSM_ROOT/lib/settings.sh"
     source "$REAL_CSM_ROOT/lib/instances.sh"
     source "$REAL_CSM_ROOT/lib/credentials.sh"
     source "$REAL_CSM_ROOT/lib/docker.sh"

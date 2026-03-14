@@ -102,8 +102,10 @@ credentials_get_docker_env_flags() {
         local mcp_enabled
         mcp_enabled="$(instances_get_mcp_enabled "$instance_name")"
         if [[ "$mcp_enabled" == "true" ]]; then
+            local mcp_port
+            mcp_port="$(settings_get '.integrations.mcp_port')"
             CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_MCP_ENABLED=1")
-            CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_MCP_PORT=${CSM_MCP_PORT:-8811}")
+            CSM_DOCKER_ENV_FLAGS+=("-e" "CSM_MCP_PORT=${mcp_port:-8811}")
         fi
 
         local remote_control
