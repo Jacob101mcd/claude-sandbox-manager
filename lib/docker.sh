@@ -78,13 +78,11 @@ _docker_build_run_cmd() {
     _DOCKER_RUN_CMD+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from config)
     _DOCKER_RUN_CMD+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
     _DOCKER_RUN_CMD+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
-    _DOCKER_RUN_CMD+=(--cap-drop=MKNOD)                          # SEC-03: drop capabilities
-    _DOCKER_RUN_CMD+=(--cap-drop=AUDIT_WRITE)                    # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=SETFCAP)                        # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=SETPCAP)                        # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=NET_BIND_SERVICE)               # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=SYS_CHROOT)                     # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=FSETID)                         # SEC-03
+    _DOCKER_RUN_CMD+=(--cap-drop=MKNOD)                          # SEC-03: drop unnecessary capabilities
+    _DOCKER_RUN_CMD+=(--cap-drop=SETFCAP)                        # SEC-03: (AUDIT_WRITE and SYS_CHROOT
+    _DOCKER_RUN_CMD+=(--cap-drop=SETPCAP)                        # SEC-03:  intentionally retained --
+    _DOCKER_RUN_CMD+=(--cap-drop=NET_BIND_SERVICE)               # SEC-03:  sshd needs them for PTY
+    _DOCKER_RUN_CMD+=(--cap-drop=FSETID)                         # SEC-03:  alloc and privsep chroot)
     _DOCKER_RUN_CMD+=(--restart unless-stopped)
 
     # GUI-specific flags: shared memory and noVNC port mapping

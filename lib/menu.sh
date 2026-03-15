@@ -6,7 +6,7 @@
 #
 # Provides: menu_show_header, menu_show_instances, menu_show_actions,
 #           menu_select_instance, menu_select_container_type,
-#           menu_action_start, menu_action_stop,
+#           menu_action_start, menu_action_stop, menu_action_rebuild,
 #           menu_action_new, menu_action_remove,
 #           menu_action_backup, menu_action_restore, menu_main
 
@@ -58,6 +58,7 @@ menu_show_actions() {
     echo "${_MENU_CLR_CYAN}--- Actions ---${_CLR_RESET}"
     echo "  [S] Start an instance"
     echo "  [T] Stop an instance"
+    echo "  [D] Rebuild an instance"
     echo "  [N] Create new instance"
     echo "  [R] Remove an instance"
     echo "  [B] Backup an instance"
@@ -188,6 +189,45 @@ menu_action_stop() {
 
     docker_stop "$name"
     msg_ok "Stopped."
+}
+
+# ---------------------------------------------------------------------------
+# menu_action_rebuild -- Rebuild an instance's image and restart the container
+# ---------------------------------------------------------------------------
+menu_action_rebuild() {
+    local name
+    name="$(menu_select_instance "Select instance to rebuild:")" || return
+
+    msg_warn "Rebuild will recreate the container from a fresh image."
+    msg_warn "In-container changes will be lost. Your workspace is preserved."
+
+    local confirm
+    read -rp "Continue? (y/N) " confirm
+    [[ "$confirm" == "y" || "$confirm" == "Y" ]] || { msg_warn "Cancelled."; return; }
+
+    docker_start_instance "$name"
+
+    local type
+    type="$(instances_get_type "$name")"
+
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        msg_ok "noVNC desktop: http://localhost:${vnc_port}"
+        local answer
+        read -rp "Open in browser? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            xdg-open "http://localhost:${vnc_port}" 2>/dev/null || \
+            open "http://localhost:${vnc_port}" 2>/dev/null || \
+            true
+        fi
+    else
+        local answer
+        read -rp "SSH into instance now? (y/N) " answer
+        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+            exec ssh "$(common_ssh_alias "$name")"
+        fi
+    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -384,6 +424,7 @@ menu_main() {
         case "${choice,,}" in
             s) menu_action_start ;;
             t) menu_action_stop ;;
+            d) menu_action_rebuild ;;
             n) menu_action_new ;;
             r) menu_action_remove ;;
             b) menu_action_backup ;;
