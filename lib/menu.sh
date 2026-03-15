@@ -90,7 +90,7 @@ menu_select_instance() {
 
     # Auto-select if only one
     if [[ ${#names[@]} -eq 1 ]]; then
-        msg_info "Using instance: ${names[0]}"
+        msg_info "Using instance: ${names[0]}" >&2
         echo "${names[0]}"
         return 0
     fi
