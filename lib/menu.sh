@@ -75,7 +75,7 @@ menu_select_instance() {
     local prompt="${1:-Select instance:}"
 
     local registered_names
-    registered_names="$(jq -r 'keys[]' "${CSM_ROOT}/.instances.json" 2>/dev/null)"
+    registered_names="$(jq -r 'keys[]' "${CSM_ROOT}/.instances.json" 2>/dev/null || true)"
 
     if [[ -z "$registered_names" ]]; then
         msg_warn "No instances found."
@@ -364,12 +364,12 @@ menu_action_restore() {
 menu_main() {
     # Auto-create "default" instance if none exist (like PowerShell version)
     local registered_names
-    registered_names="$(jq -r 'keys[]' "${CSM_ROOT}/.instances.json" 2>/dev/null)"
+    registered_names="$(jq -r 'keys[]' "${CSM_ROOT}/.instances.json" 2>/dev/null || true)"
 
     if [[ -z "$registered_names" ]]; then
         msg_warn "No instances found. Creating 'default' instance..."
         instances_add "default" "cli"
-        docker_start_instance "default"
+        msg_info "Press [S] to build and start the default instance."
     fi
 
     menu_show_header
