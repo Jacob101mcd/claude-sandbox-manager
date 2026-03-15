@@ -57,6 +57,8 @@ Double-click `claude-manager.bat` to open the interactive manager. The same flow
 
 ### Linux / macOS (BETA, not fully tested)
 
+> **macOS note:** Docker Desktop on macOS defaults to 1 CPU. CSM's default container CPU limit is 2, which will cause `docker run` to fail if Docker Desktop hasn't been given enough resources. Before running CSM, go to **Docker Desktop → Settings → Resources** and set CPUs to at least **2**. Alternatively, after first launch use **`[P] Preferences → CPU limit`** to lower it to `1`.
+
 ```bash
 git clone https://github.com/Jacob101mcd/claude-sandbox-manager.git
 cd claude-sandbox-manager

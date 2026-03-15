@@ -29,8 +29,8 @@ fi
 # Message helpers
 # ---------------------------------------------------------------------------
 
-msg_info()  { echo "${_CLR_BLUE}[*]${_CLR_RESET} $*"; }
-msg_ok()    { echo "${_CLR_GREEN}[OK]${_CLR_RESET} $*"; }
+msg_info()  { echo "${_CLR_BLUE}[*]${_CLR_RESET} $*" >&2; }
+msg_ok()    { echo "${_CLR_GREEN}[OK]${_CLR_RESET} $*" >&2; }
 msg_warn()  { echo "${_CLR_YELLOW}[!]${_CLR_RESET} $*" >&2; }
 msg_error() { echo "${_CLR_RED}[X]${_CLR_RESET} $*" >&2; }
 
