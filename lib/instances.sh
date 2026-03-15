@@ -213,6 +213,22 @@ instances_get_vnc_port() {
 }
 
 # ---------------------------------------------------------------------------
+# instances_set_vnc_port -- Set/update the VNC port for a named instance
+# Args: $1 = instance name, $2 = vnc_port
+# ---------------------------------------------------------------------------
+instances_set_vnc_port() {
+    local name="$1"
+    local vnc_port="$2"
+
+    _instances_ensure_file
+
+    jq --arg name "$name" --argjson vnc_port "$vnc_port" \
+        '.[$name].vnc_port = $vnc_port' \
+        "$_INSTANCES_FILE" > "${_INSTANCES_FILE}.tmp" \
+        && mv "${_INSTANCES_FILE}.tmp" "$_INSTANCES_FILE"
+}
+
+# ---------------------------------------------------------------------------
 # instances_get_mcp_enabled -- Look up the mcp_enabled flag for a named instance
 # Args: $1 = instance name
 # Returns: "true" or "false" (stdout); defaults to "true" for backward compat

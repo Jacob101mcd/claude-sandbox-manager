@@ -208,6 +208,18 @@ docker_start_instance() {
         port="$(instances_add "$name")"
     fi
 
+    # 3b. Ensure GUI instances have a VNC port allocated
+    local type
+    type="$(instances_get_type "$name")"
+    if [[ "$type" == "gui" ]]; then
+        local vnc_port
+        vnc_port="$(instances_get_vnc_port "$name")"
+        if [[ -z "$vnc_port" ]]; then
+            vnc_port="$(instances_next_free_vnc_port)"
+            instances_set_vnc_port "$name" "$vnc_port"
+        fi
+    fi
+
     # 4. Build the Docker image
     docker_build "$name"
 
