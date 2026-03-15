@@ -75,9 +75,11 @@ instances_get_type() {
 
     _instances_ensure_file
 
-    local type
-    type="$(jq -r --arg name "$name" '.[$name].type // "cli"' "$_INSTANCES_FILE")"
-    echo "$type"
+    local raw type
+    raw="$(jq -r --arg name "$name" '.[$name].type // "cli"' "$_INSTANCES_FILE")"
+    # Strip whitespace and validate; fall back to "cli" for any corrupted value
+    type="$(printf '%s' "$raw" | tr -d '[:space:]' | grep -oE '(gui|cli)$')" || true
+    echo "${type:-cli}"
 }
 
 # ---------------------------------------------------------------------------

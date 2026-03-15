@@ -97,10 +97,10 @@ menu_select_instance() {
     fi
 
     # Show numbered list for selection
-    echo "$prompt"
+    echo "$prompt" >&2
     local i
     for i in "${!names[@]}"; do
-        echo "  $((i + 1)). ${names[$i]}"
+        echo "  $((i + 1)). ${names[$i]}" >&2
     done
 
     local choice
@@ -134,13 +134,13 @@ menu_select_container_type() {
     fi
 
     # Null/unset -- show interactive prompt
-    echo ""
-    echo "Select container type:"
-    echo "  [1] Minimal CLI"
-    echo "  [2] GUI Desktop"
-    echo ""
+    echo "" >&2
+    echo "Select container type:" >&2
+    echo "  [1] Minimal CLI" >&2
+    echo "  [2] GUI Desktop" >&2
+    echo "" >&2
     local choice
-    read -rp "Type [1]: " choice
+    read -rp "Select type [1]: " choice
     case "${choice:-1}" in
         1) echo "cli" ;;
         2) echo "gui" ;;
@@ -236,6 +236,7 @@ menu_action_rebuild() {
 menu_action_new() {
     local input
     read -rp "Enter instance name (lowercase, no spaces): " input
+    input="${input,,}"
 
     # Validate: 4-10 chars, lowercase letters/digits/hyphens, no leading/trailing hyphen
     local name
