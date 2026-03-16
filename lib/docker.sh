@@ -77,7 +77,8 @@ _docker_build_run_cmd() {
     cpu_limit="$(settings_get '.defaults.cpu_limit')"
     _DOCKER_RUN_CMD+=(--memory="${mem_limit:-2g}")                # SEC-04: memory limit (from config)
     _DOCKER_RUN_CMD+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
-    _DOCKER_RUN_CMD+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
+    # Note: no-new-privileges intentionally NOT set —
+    # it prevents sudo/apt-get from working inside the container
     _DOCKER_RUN_CMD+=(--cap-drop=MKNOD)                          # SEC-03: drop capabilities
     _DOCKER_RUN_CMD+=(--cap-drop=SETFCAP)                        # SEC-03
     _DOCKER_RUN_CMD+=(--cap-drop=SETPCAP)                        # SEC-03
