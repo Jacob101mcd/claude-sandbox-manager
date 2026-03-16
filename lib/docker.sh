@@ -96,6 +96,13 @@ _docker_build_run_cmd() {
         _DOCKER_RUN_CMD+=(--shm-size=512m)                       # Shared memory for browser/GPU
     fi
 
+    # Custom port forwards from .instances.json
+    local pf
+    while IFS= read -r pf; do
+        [[ -z "$pf" ]] && continue
+        _DOCKER_RUN_CMD+=(-p "127.0.0.1:${pf}")
+    done < <(instances_get_port_forwards "$name")
+
     # MCP: ensure host.docker.internal resolves on Linux Engine
     if [[ "$(uname -s)" == "Linux" ]]; then
         local docker_variant

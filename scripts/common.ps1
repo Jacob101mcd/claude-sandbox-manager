@@ -620,6 +620,14 @@ function Get-InstanceVncPort($Name) {
     return $null
 }
 
+function Get-InstancePortForwards($Name) {
+    $instances = Get-Instances
+    $prop = $instances.PSObject.Properties[$Name]
+    if (-not $prop) { return @() }
+    if ($prop.Value.PSObject.Properties["port_forwards"]) { return @($prop.Value.port_forwards) }
+    return @()
+}
+
 # ===========================================================================
 # SSH key management
 # ===========================================================================
@@ -1023,6 +1031,13 @@ function Start-SandboxInstance($Name, [switch]$NoCache) {
         $runArgs += "-p"
         $runArgs += "127.0.0.1:${vncPort}:6080"
         $runArgs += "--shm-size=512m"
+    }
+
+    # Custom port forwards from .instances.json
+    $portForwards = Get-InstancePortForwards $Name
+    foreach ($pf in $portForwards) {
+        $runArgs += "-p"
+        $runArgs += "127.0.0.1:${pf}"
     }
 
     $runArgs += $envFlags

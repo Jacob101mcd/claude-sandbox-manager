@@ -255,6 +255,19 @@ instances_get_remote_control() {
 }
 
 # ---------------------------------------------------------------------------
+# instances_get_port_forwards -- Look up custom port forwards for an instance
+# Args: $1 = instance name
+# Returns: one "host:container" entry per line (stdout), empty if none
+# ---------------------------------------------------------------------------
+instances_get_port_forwards() {
+    local name="$1"
+
+    _instances_ensure_file
+
+    jq -r --arg n "$name" '.[$n].port_forwards // [] | .[]' "$_INSTANCES_FILE"
+}
+
+# ---------------------------------------------------------------------------
 # instances_set_mcp_enabled -- Update the mcp_enabled flag for an instance
 # Args: $1 = instance name, $2 = true|false
 # ---------------------------------------------------------------------------
