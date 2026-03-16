@@ -32,12 +32,20 @@ load test_helper
 }
 
 @test "entrypoint idempotency check prevents duplicate config on re-run" {
-    # The mcp get check must gate the mcp add-json call (negated condition)
-    grep -qF '! su - claude -c "claude mcp get' "$CSM_ROOT/scripts/entrypoint.sh"
+    # The mcp get check must gate the mcp add-json call
+    grep -q 'claude mcp get docker-mcp --scope user' "$CSM_ROOT/scripts/entrypoint.sh"
 }
 
 @test "entrypoint prints warning when MCP gateway is unreachable" {
     grep -q 'WARNING.*MCP Gateway not reachable' "$CSM_ROOT/scripts/entrypoint.sh"
+}
+
+@test "entrypoint MCP block uses explicit PATH for claude binary" {
+    grep -q 'PATH=/home/claude/.local/bin' "$CSM_ROOT/scripts/entrypoint.sh"
+}
+
+@test "entrypoint has direct-write fallback for MCP config" {
+    grep -q 'Falling back to direct config write' "$CSM_ROOT/scripts/entrypoint.sh"
 }
 
 @test "entrypoint MCP log messages use csm prefix" {

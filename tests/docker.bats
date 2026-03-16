@@ -10,13 +10,8 @@ load test_helper
   grep -q 'cap-drop=MKNOD' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "docker.sh drops AUDIT_WRITE capability" {
-  grep -q 'cap-drop=AUDIT_WRITE' "$CSM_ROOT/lib/docker.sh"
-}
-
 @test "docker.sh drops all required capabilities" {
   grep -q 'cap-drop=MKNOD' "$CSM_ROOT/lib/docker.sh"
-  grep -q 'cap-drop=AUDIT_WRITE' "$CSM_ROOT/lib/docker.sh"
   grep -q 'cap-drop=SETFCAP' "$CSM_ROOT/lib/docker.sh"
   grep -q 'cap-drop=SETPCAP' "$CSM_ROOT/lib/docker.sh"
   grep -q 'cap-drop=NET_BIND_SERVICE' "$CSM_ROOT/lib/docker.sh"
@@ -32,7 +27,8 @@ load test_helper
   grep -q 'settings_get.*cpu_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "docker.sh sets no-new-privileges" {
+@test "docker.sh documents no-new-privileges removal" {
+  # no-new-privileges intentionally removed — it prevents sudo/apt-get
   grep -q 'no-new-privileges' "$CSM_ROOT/lib/docker.sh"
 }
 

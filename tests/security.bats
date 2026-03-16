@@ -18,6 +18,7 @@ load test_helper
   grep -q 'settings_get.*cpu_limit' "$CSM_ROOT/lib/docker.sh"
 }
 
-@test "lib/docker.sh sets no-new-privileges" {
+@test "lib/docker.sh documents no-new-privileges removal" {
+  # no-new-privileges intentionally removed — it prevents sudo/apt-get
   grep -q 'no-new-privileges' "$CSM_ROOT/lib/docker.sh"
 }

@@ -23,17 +23,50 @@ fi
 # --- MCP Gateway auto-configuration ---
 _mcp_port="${CSM_MCP_PORT:-8811}"
 _mcp_url="http://host.docker.internal:${_mcp_port}/sse"
+_claude_path="PATH=/home/claude/.local/bin:\$PATH"
 
 if [[ "${CSM_MCP_ENABLED:-0}" == "1" ]]; then
     # Probe gateway reachability (2-second timeout)
-    if curl --silent --max-time 2 --output /dev/null --head "${_mcp_url%/sse}" 2>/dev/null || \
-       curl --silent --max-time 2 --output /dev/null -w "" "${_mcp_url}" 2>/dev/null; then
-        # Idempotent: only add if not already registered
-        if ! su - claude -c "claude mcp get docker-mcp --scope user" &>/dev/null 2>&1; then
-            if su - claude -c "claude mcp add-json docker-mcp '{\"type\":\"sse\",\"url\":\"${_mcp_url}\"}' --scope user < /dev/null" 2>/dev/null; then
+    # Exit 0 = completed; exit 28 = timeout mid-stream (SSE connected OK)
+    # Exit 7 = connection refused; exit 6 = DNS failed
+    curl --silent --max-time 2 --output /dev/null "${_mcp_url}" 2>/dev/null
+    _probe_rc=$?
+    if [[ $_probe_rc -eq 0 || $_probe_rc -eq 28 ]]; then
+
+        _mcp_configured=0
+
+        # Idempotent: check if already registered
+        if su - claude -c "${_claude_path} claude mcp get docker-mcp --scope user" >/dev/null 2>&1; then
+            echo "[csm] MCP Gateway already configured"
+            _mcp_configured=1
+        fi
+
+        # Primary: configure via claude CLI with explicit PATH
+        if [[ "$_mcp_configured" -eq 0 ]]; then
+            _mcp_output=$(su - claude -c "${_claude_path} claude mcp add-json docker-mcp '{\"type\":\"sse\",\"url\":\"${_mcp_url}\"}' --scope user < /dev/null" 2>&1)
+            if [[ $? -eq 0 ]]; then
                 echo "[csm] MCP Gateway connected: ${_mcp_url}"
+                _mcp_configured=1
             else
-                echo "[csm] WARNING: Failed to write MCP config via claude CLI"
+                echo "[csm] DEBUG: claude mcp add-json failed: ${_mcp_output}"
+            fi
+        fi
+
+        # Fallback: write ~/.claude.json directly via Node.js if CLI failed
+        if [[ "$_mcp_configured" -eq 0 ]]; then
+            echo "[csm] Falling back to direct config write for MCP"
+            if su - claude -c "node -e \"
+const fs = require('fs');
+const p = '/home/claude/.claude.json';
+let c = {};
+try { c = JSON.parse(fs.readFileSync(p,'utf8')); } catch(e) {}
+if (!c.mcpServers) c.mcpServers = {};
+c.mcpServers['docker-mcp'] = {type:'sse',url:'${_mcp_url}'};
+fs.writeFileSync(p, JSON.stringify(c,null,2));
+\"" 2>&1; then
+                echo "[csm] MCP Gateway connected (direct write): ${_mcp_url}"
+            else
+                echo "[csm] WARNING: Failed to write MCP config via both CLI and direct write"
             fi
         fi
     else
@@ -45,7 +78,7 @@ fi
 # --- Remote control (optional) ---
 if [[ "${CSM_REMOTE_CONTROL:-}" == "1" ]]; then
     _rc_log="/tmp/csm-remote-control.log"
-    su - claude -c "claude remote-control --name 'CSM: $(hostname)' > '${_rc_log}' 2>&1 &"
+    su - claude -c "PATH=/home/claude/.local/bin:\$PATH claude remote-control --name 'CSM: $(hostname)' > '${_rc_log}' 2>&1 &"
     # Give it 3 seconds to register or fail
     sleep 3
     if grep -q 'https://claude\.ai' "${_rc_log}" 2>/dev/null; then

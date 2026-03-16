@@ -56,6 +56,9 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/claude/.bashrc \
     && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/claude/.profile
 
+# Verify Claude Code binary is accessible
+RUN /home/claude/.local/bin/claude --version
+
 # Install GSD (Get Shit Done) framework for the claude user
 RUN npx -y get-shit-done-cc@latest --global
 USER root
