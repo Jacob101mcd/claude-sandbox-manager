@@ -79,12 +79,12 @@ _docker_build_run_cmd() {
     _DOCKER_RUN_CMD+=(--cpus="${cpu_limit:-2}")                   # SEC-04: CPU limit (from config)
     _DOCKER_RUN_CMD+=(--security-opt=no-new-privileges)           # SEC-04: no privilege escalation
     _DOCKER_RUN_CMD+=(--cap-drop=MKNOD)                          # SEC-03: drop capabilities
-    _DOCKER_RUN_CMD+=(--cap-drop=AUDIT_WRITE)                    # SEC-03
     _DOCKER_RUN_CMD+=(--cap-drop=SETFCAP)                        # SEC-03
     _DOCKER_RUN_CMD+=(--cap-drop=SETPCAP)                        # SEC-03
     _DOCKER_RUN_CMD+=(--cap-drop=NET_BIND_SERVICE)               # SEC-03
-    _DOCKER_RUN_CMD+=(--cap-drop=SYS_CHROOT)                     # SEC-03
     _DOCKER_RUN_CMD+=(--cap-drop=FSETID)                         # SEC-03
+    # Note: AUDIT_WRITE and SYS_CHROOT intentionally NOT dropped —
+    # sshd needs AUDIT_WRITE for PTY allocation and SYS_CHROOT for privsep
     _DOCKER_RUN_CMD+=(--restart unless-stopped)
 
     # GUI-specific flags: shared memory and noVNC port mapping
@@ -175,6 +175,35 @@ docker_status() {
 }
 
 # ---------------------------------------------------------------------------
+# _docker_check_mcp_gateway -- Pre-flight check for MCP Gateway connectivity
+# Args: $1 = instance name
+# ---------------------------------------------------------------------------
+_docker_check_mcp_gateway() {
+    local name="$1"
+    local mcp_enabled
+    mcp_enabled="$(instances_get_mcp_enabled "$name" 2>/dev/null || echo "false")"
+    if [[ "$mcp_enabled" != "true" ]]; then return 0; fi
+
+    local mcp_port
+    mcp_port="$(settings_get '.integrations.mcp_port')"
+    mcp_port="${mcp_port:-8811}"
+
+    # Exit 0 = completed; exit 28 = timeout mid-stream (SSE connected OK)
+    curl --silent --max-time 2 --output /dev/null "http://localhost:${mcp_port}/sse" 2>/dev/null
+    _probe_rc=$?
+    if [[ $_probe_rc -eq 0 || $_probe_rc -eq 28 ]]; then
+        msg_ok "MCP Gateway detected on port ${mcp_port}"
+    else
+        msg_warn "MCP Gateway not detected on port ${mcp_port}"
+        echo "    Claude Code in the container will have no MCP servers."
+        echo "    To enable MCP:"
+        echo "      1. Docker Desktop: Settings > Features > Enable MCP Toolkit"
+        echo "      2. Add MCP servers via Docker Desktop MCP Catalog"
+        echo "      3. Linux Engine: docker mcp gateway run --transport sse --port ${mcp_port}"
+    fi
+}
+
+# ---------------------------------------------------------------------------
 # docker_start_instance -- Full orchestration: keys -> build -> run -> config
 # Args: $1 = instance name
 # Returns: allocated port (stdout, last line)
@@ -210,13 +239,16 @@ docker_start_instance() {
         port="$(instances_add "$name")"
     fi
 
-    # 4. Build the Docker image
+    # 4. Pre-flight: check MCP Gateway connectivity
+    _docker_check_mcp_gateway "$name"
+
+    # 5. Build the Docker image
     docker_build "$name"
 
-    # 5. Run the container with security hardening
+    # 6. Run the container with security hardening
     docker_run_instance "$name" "$port"
 
-    # 6. Write SSH config for easy access
+    # 7. Write SSH config for easy access
     ssh_write_config "$name" "$port"
 
     msg_ok "Instance '${name}' ready on port ${port}"

@@ -433,6 +433,51 @@ function Get-DockerEnvFlags($Name) {
 }
 
 # ===========================================================================
+# MCP Gateway pre-flight check
+# ===========================================================================
+
+function Test-McpGateway {
+    $port = Get-Setting '.integrations.mcp_port'
+    if (-not $port) { $port = 8811 }
+    try {
+        $tcp = New-Object System.Net.Sockets.TcpClient
+        $tcp.Connect("localhost", [int]$port)
+        $tcp.Close()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Show-McpGatewayStatus {
+    param([string]$Name)
+
+    $instances = Get-Instances
+    $inst = $instances.PSObject.Properties[$Name]
+    if (-not $inst) { return }
+
+    $mcpEnabled = $inst.Value.PSObject.Properties["mcp_enabled"]
+    if (-not $mcpEnabled -or $mcpEnabled.Value -ne $true) { return }
+
+    $port = Get-Setting '.integrations.mcp_port'
+    if (-not $port) { $port = "8811" }
+
+    if (Test-McpGateway) {
+        Write-Host "[OK] MCP Gateway detected on port $port" -ForegroundColor Green
+    } else {
+        Write-Host ""
+        Write-Host "[!] MCP Gateway not detected on port $port" -ForegroundColor Yellow
+        Write-Host "    Claude Code in the container will have no MCP servers." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "    To enable MCP:" -ForegroundColor Cyan
+        Write-Host "    1. Open Docker Desktop > Settings > Features > Enable MCP Toolkit" -ForegroundColor Cyan
+        Write-Host "    2. Add MCP servers via Docker Desktop MCP Catalog" -ForegroundColor Cyan
+        Write-Host "    3. Restart Docker Desktop if you just enabled MCP Toolkit" -ForegroundColor Cyan
+        Write-Host ""
+    }
+}
+
+# ===========================================================================
 # Container status
 # ===========================================================================
 
@@ -961,6 +1006,9 @@ function Start-SandboxInstance($Name, [switch]$NoCache) {
     if (-not $memLimit) { $memLimit = "2g" }
     $cpuLimit = Get-Setting '.defaults.cpu_limit'
     if (-not $cpuLimit) { $cpuLimit = "2" }
+
+    # Pre-flight: check MCP Gateway connectivity
+    Show-McpGatewayStatus $Name
 
     # Build run args with security hardening (port from lib/docker.sh)
     $runArgs = @("run", "-d", "--name", $containerName,
