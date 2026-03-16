@@ -705,17 +705,10 @@ function Invoke-Backup($Name) {
         return $false
     }
 
-    # Step 2: docker save | gzip
+    # Step 2: docker save + gzip
     Write-Host "Saving image to $backupDir\image.tar.gz..." -ForegroundColor Yellow
-    docker save $imageTag | & { param($input) [System.IO.Compression.GZipStream]::new(
-        [System.IO.File]::Create("$backupDir\image.tar.gz"),
-        [System.IO.Compression.CompressionMode]::Compress) } 2>$null
-
-    # Simpler cross-platform approach: docker save then compress with .NET
-    # (docker save | gzip is not available in all Windows environments, use PowerShell)
     docker save $imageTag -o "$backupDir\image.tar"
     if ($LASTEXITCODE -eq 0) {
-        # Compress using PowerShell (available on Windows 10+)
         $inputPath  = "$backupDir\image.tar"
         $outputPath = "$backupDir\image.tar.gz"
         try {
@@ -723,14 +716,16 @@ function Invoke-Backup($Name) {
             $outputStream = [System.IO.File]::Create($outputPath)
             $gzipStream   = [System.IO.Compression.GZipStream]::new($outputStream, [System.IO.Compression.CompressionMode]::Compress)
             $inputStream.CopyTo($gzipStream)
-            $gzipStream.Close()
-            $outputStream.Close()
-            $inputStream.Close()
-            Remove-Item $inputPath -Force
-            Write-Host "[OK] Image saved to image.tar.gz" -ForegroundColor Green
         } catch {
             Write-Host "[!] Compression failed, keeping image.tar: $_" -ForegroundColor Yellow
-            if (Test-Path $outputPath) { Remove-Item $outputPath -Force }
+        } finally {
+            if ($gzipStream)   { $gzipStream.Dispose() }
+            if ($outputStream)  { $outputStream.Dispose() }
+            if ($inputStream)   { $inputStream.Dispose() }
+        }
+        if (Test-Path $outputPath) {
+            Remove-Item $inputPath -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Image saved to image.tar.gz" -ForegroundColor Green
         }
     }
 
