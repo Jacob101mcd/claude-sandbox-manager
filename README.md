@@ -95,6 +95,8 @@ Each instance gets its own container, SSH port, workspace, and SSH keys. You can
 --- Actions ---
   [S] Start an instance
   [T] Stop an instance
+  [C] Connect to an instance
+  [D] Rebuild an instance
   [N] Create new instance
   [R] Remove an instance
   [B] Backup an instance
@@ -105,6 +107,8 @@ Each instance gets its own container, SSH port, workspace, and SSH keys. You can
 
 - **[S] Start** — Build and start a stopped instance (first build takes a few minutes)
 - **[T] Stop** — Stop a running instance's container
+- **[C] Connect** — SSH into a running instance (only shows running instances)
+- **[D] Rebuild** — Rebuild an instance's image from scratch and restart the container (workspace is preserved)
 - **[N] New** — Create a new instance with a unique name; assigns the next available SSH port
 - **[R] Remove** — Stop, deregister, and optionally delete workspace and backups
 - **[B] Backup** — Export container state and workspace to `backups/{name}/`
