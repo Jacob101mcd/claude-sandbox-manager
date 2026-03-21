@@ -58,6 +58,7 @@ menu_show_actions() {
     echo "${_MENU_CLR_CYAN}--- Actions ---${_CLR_RESET}"
     echo "  [S] Start an instance"
     echo "  [T] Stop an instance"
+    echo "  [C] Connect to an instance"
     echo "  [D] Rebuild an instance"
     echo "  [N] Create new instance"
     echo "  [R] Remove an instance"
@@ -146,6 +147,80 @@ menu_select_container_type() {
         2) echo "gui" ;;
         *) msg_error "Invalid selection. Using Minimal CLI."; echo "cli" ;;
     esac
+}
+
+# ---------------------------------------------------------------------------
+# menu_select_running_instance -- Prompt user to pick a running instance
+# Args: $1 = prompt string
+# Returns: selected instance name on stdout, or returns 1 if none running
+# ---------------------------------------------------------------------------
+menu_select_running_instance() {
+    local prompt="${1:-Select instance:}"
+
+    local registered_names
+    registered_names="$(jq -r 'keys[]' "${CSM_ROOT}/.instances.json" 2>/dev/null || true)"
+
+    if [[ -z "$registered_names" ]]; then
+        msg_warn "No instances found."
+        return 1
+    fi
+
+    # Filter to running instances only
+    local running_names=()
+    local name
+    for name in $registered_names; do
+        local status
+        status="$(docker_status "$name")"
+        if [[ "$status" == "running" ]]; then
+            running_names+=("$name")
+        fi
+    done
+
+    if [[ ${#running_names[@]} -eq 0 ]]; then
+        msg_warn "No running instances."
+        return 1
+    fi
+
+    # Auto-select if only one
+    if [[ ${#running_names[@]} -eq 1 ]]; then
+        msg_info "Using instance: ${running_names[0]}"
+        echo "${running_names[0]}"
+        return 0
+    fi
+
+    # Show numbered list for selection
+    echo "$prompt" >&2
+    local i
+    for i in "${!running_names[@]}"; do
+        local port
+        port="$(instances_get_port "${running_names[$i]}")"
+        echo "  $((i + 1)). ${running_names[$i]}  (port ${port})" >&2
+    done
+
+    local choice
+    read -rp "Enter number: " choice
+
+    # Validate: must be a number in range
+    if ! [[ "$choice" =~ ^[0-9]+$ ]] || (( choice < 1 || choice > ${#running_names[@]} )); then
+        msg_error "Invalid selection."
+        return 1
+    fi
+
+    echo "${running_names[$((choice - 1))]}"
+}
+
+# ---------------------------------------------------------------------------
+# menu_action_connect -- SSH into a running instance
+# ---------------------------------------------------------------------------
+menu_action_connect() {
+    local name
+    name="$(menu_select_running_instance "Select instance to connect to:")" || return
+
+    local alias
+    alias="$(common_ssh_alias "$name")"
+
+    msg_info "Connecting to '${name}' via ssh ${alias}..."
+    exec ssh "$alias"
 }
 
 # ---------------------------------------------------------------------------
@@ -425,6 +500,7 @@ menu_main() {
         case "${choice,,}" in
             s) menu_action_start ;;
             t) menu_action_stop ;;
+            c) menu_action_connect ;;
             d) menu_action_rebuild ;;
             n) menu_action_new ;;
             r) menu_action_remove ;;

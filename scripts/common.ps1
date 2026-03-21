@@ -565,6 +565,51 @@ function Select-Instance($Prompt) {
     return $props[$index].Name
 }
 
+function Select-RunningInstance($Prompt) {
+    $instances = Get-Instances
+    $props = @($instances.PSObject.Properties)
+    if ($props.Count -eq 0) {
+        Write-Host "No instances found." -ForegroundColor Red
+        return $null
+    }
+
+    # Filter to running instances only
+    $running = @()
+    foreach ($prop in $props) {
+        $status = Get-ContainerStatus $prop.Name
+        if ($status -eq "running") {
+            $running += $prop
+        }
+    }
+
+    if ($running.Count -eq 0) {
+        Write-Host "No running instances." -ForegroundColor Yellow
+        return $null
+    }
+
+    if ($running.Count -eq 1) {
+        $name = $running[0].Name
+        Write-Host "Using instance: $name" -ForegroundColor Cyan
+        return $name
+    }
+
+    Write-Host "`n$Prompt" -ForegroundColor Cyan
+    for ($i = 0; $i -lt $running.Count; $i++) {
+        $name = $running[$i].Name
+        $port = $running[$i].Value.port
+        Write-Host "  [$($i+1)] $name  (port $port, " -NoNewline
+        Write-Host "running" -ForegroundColor Green -NoNewline
+        Write-Host ")"
+    }
+    $choice = Read-Host "`nEnter number"
+    $index = [int]$choice - 1
+    if ($index -lt 0 -or $index -ge $running.Count) {
+        Write-Host "Invalid choice." -ForegroundColor Red
+        return $null
+    }
+    return $running[$index].Name
+}
+
 # ===========================================================================
 # Instance registry CRUD (updated for type, vnc_port, mcp_enabled, remote_control)
 # ===========================================================================

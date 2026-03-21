@@ -24,6 +24,8 @@ while ($true) {
     Write-Host "`n--- Actions ---" -ForegroundColor Cyan
     Write-Host "  [S] Start an instance"
     Write-Host "  [T] Stop an instance"
+    Write-Host "  [C] Connect to an instance"
+    Write-Host "  [D] Rebuild an instance"
     Write-Host "  [N] Create new instance"
     Write-Host "  [R] Remove an instance"
     Write-Host "  [B] Backup an instance"
@@ -61,6 +63,43 @@ while ($true) {
                 Write-Host "Stopping $containerName..." -ForegroundColor Yellow
                 docker stop $containerName 2>$null
                 Write-Host "[OK] Stopped." -ForegroundColor Green
+            }
+        }
+        "C" {
+            $name = Select-RunningInstance "Select instance to connect to:"
+            if ($name) {
+                $alias = Get-SshAlias $name
+                Write-Host "Connecting to '$name' via ssh $alias..." -ForegroundColor Cyan
+                $sshExe = "$env:SystemRoot\System32\OpenSSH\ssh.exe"
+                if (-not (Test-Path $sshExe)) { $sshExe = "ssh" }
+                & $sshExe -t $alias "cd workspace && exec `$SHELL"
+            }
+        }
+        "D" {
+            $name = Select-Instance "Select instance to rebuild:"
+            if ($name) {
+                Write-Host "[!] Rebuild will recreate the container from a fresh image." -ForegroundColor Yellow
+                Write-Host "[!] In-container changes will be lost. Your workspace is preserved." -ForegroundColor Yellow
+                $confirm = Read-Host "Continue? (y/N)"
+                if ($confirm -eq "y" -or $confirm -eq "Y") {
+                    $ok = Start-SandboxInstance $name -NoCache
+                    if ($ok) {
+                        $type    = Get-InstanceType $name
+                        $vncPort = Get-InstanceVncPort $name
+                        if ($type -eq "gui" -and $vncPort) {
+                            Write-Host "[OK] noVNC desktop: http://localhost:$vncPort" -ForegroundColor Green
+                            $answer = Read-Host "Open in browser? (y/N)"
+                            if ($answer -eq "y" -or $answer -eq "Y") {
+                                Start-Process "http://localhost:$vncPort"
+                            }
+                        } else {
+                            $alias = Get-SshAlias $name
+                            Write-Host "Connect via: ssh $alias" -ForegroundColor Cyan
+                        }
+                    }
+                } else {
+                    Write-Host "Cancelled." -ForegroundColor Yellow
+                }
             }
         }
         "N" {
